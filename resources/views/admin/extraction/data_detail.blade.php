@@ -39,17 +39,13 @@
                         <a href="{{ route('extraccion.exportData.excel', ['idHeader' => $objHeader->id])  }}" class="btn btn-success">Exportar</a>
                     </div>
                     <br>
-                    <div class="col-md-12" style="height: 800px; overflow-x: auto;">
-                        <table class="table table-hover" id="tableDetail">
+                    <div class="col-md-12" style="height: 800px;">
+                        <table class="table table-hover nowrap" id="tableDetail" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>PARTIDA ADUANERA</th>
-                                    <th>ADUANA</th>
                                     <th>DUA</th>
                                     <th>FECHA</th>
                                     <th>ETA</th>
-                                    <th>NUMERO DE MANIFIESTO</th>
-                                    <th>CÓDIGO TRIBUTARIO</th>
                                     <th>IMPORTADOR</th>
                                     <th>EMBARCADOR / EXPORTADOR</th>
                                     <th>PESO BRUTO</th>
@@ -61,18 +57,16 @@
                                     <th>FOB TOTAL</th>
                                     <th>FOB UND 1</th>
                                     <th>FOB UND 2</th>
+                                    <th>COD PAIS ORIGEN</th>
                                     <th>PAIS ORIGEN</th>
+                                    <th>COD PAIS COMPRA</th>
                                     <th>PAIS COMPRA</th>
                                     <th>PUERTO EMBARQUE</th>
                                     <th>AGENTE ADUANERO</th>
                                     <th>ESTADO</th>
                                     <th>DESCRIPCION COMERCIAL</th>
-                                    <th>DESCRIPCION 1</th>
-                                    <th>DESCRIPCION 2</th>
-                                    <th>DESCRIPCION 3</th>
-                                    <th>DESCRIPCION 4</th>
-                                    <th>DESCRIPCION 5</th>
-                                    <th>MARCA</th>
+                                    <th>COD MARCA</th>
+                                    <th>NOMBRE MARCA</th>
                                     <th>CÓDIGO</th>
                                     <th>ESTADO CARGA</th>
                                 </tr>
@@ -81,13 +75,9 @@
                             @if (!is_null($lstDetalle))
                                 @foreach($lstDetalle as $detalle)
                                     <tr>
-                                        <td>{{ $detalle->partidaAduanera }}</td>
-                                        <td>{{ $detalle->aduana }}</td>
                                         <td>{{ $detalle->dua }}</td>
                                         <td>{{ $detalle->fecha }}</td>
                                         <td>{{ $detalle->eta }}</td>
-                                        <td>{{ $detalle->numManifiesto }}</td>
-                                        <td>{{ $detalle->codTributario }}</td>
                                         <td>{{ $detalle->importador }}</td>
                                         <td>{{ $detalle->embarcadorExportador }}</td>
                                         <td>{{ $detalle->pesoBruto }}</td>
@@ -99,18 +89,16 @@
                                         <td>{{ $detalle->fobTotal }}</td>
                                         <td>{{ $detalle->fobUnd1 }}</td>
                                         <td>{{ $detalle->fobUnd2 }}</td>
+                                        <td>{{ $detalle->codPaisOrigen }}</td>
                                         <td>{{ $detalle->paisOrigen }}</td>
+                                        <td>{{ $detalle->codPaisCompra }}</td>
                                         <td>{{ $detalle->paisCompra }}</td>
                                         <td>{{ $detalle->puertoEmbarque }}</td>
                                         <td>{{ $detalle->agenteAduanero }}</td>
                                         <td>{{ $detalle->estado }}</td>
                                         <td>{{ $detalle->descripcionComercial }}</td>
-                                        <td>{{ $detalle->descripcion1 }}</td>
-                                        <td>{{ $detalle->descripcion2 }}</td>
-                                        <td>{{ $detalle->descripcion3 }}</td>
-                                        <td>{{ $detalle->descripcion4 }}</td>
-                                        <td>{{ $detalle->descripcion5 }}</td>
                                         <td>{{ $detalle->marca }}</td>
+                                        <td>{{ $detalle->nameMarca }}</td>
                                         <td>{{ $detalle->codigo }}</td>
                                         <td>
                                             <span class="{{$detalle->typeFoundColor}}">{{$detalle->status}}</span>
@@ -119,6 +107,36 @@
                                 @endforeach
                             @endif
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>DUA</th>
+                                    <th>FECHA</th>
+                                    <th>ETA</th>
+                                    <th>IMPORTADOR</th>
+                                    <th>EMBARCADOR / EXPORTADOR</th>
+                                    <th>PESO BRUTO</th>
+                                    <th>PESO NETO</th>
+                                    <th>QTY1</th>
+                                    <th>UNID1</th>
+                                    <th>QTY2</th>
+                                    <th>UNID2</th>
+                                    <th>FOB TOTAL</th>
+                                    <th>FOB UND 1</th>
+                                    <th>FOB UND 2</th>
+                                    <th>COD PAIS ORIGEN</th>
+                                    <th>PAIS ORIGEN</th>
+                                    <th>COD PAIS COMPRA</th>
+                                    <th>PAIS COMPRA</th>
+                                    <th>PUERTO EMBARQUE</th>
+                                    <th>AGENTE ADUANERO</th>
+                                    <th>ESTADO</th>
+                                    <th>DESCRIPCION COMERCIAL</th>
+                                    <th>COD MARCA</th>
+                                    <th>NOMBRE MARCA</th>
+                                    <th>CÓDIGO</th>
+                                    <th>ESTADO CARGA</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -138,7 +156,43 @@
         });
 
         function extraction_cargarDatatablePost(idTable){
-            $("#tableDetail").DataTable();
+            $('#tableDetail tfoot th').each( function () {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            } );
+            var table = $('#tableDetail').DataTable({
+                            "pageLength": 100,
+                            "lengthMenu": [ 100, 250, 500],
+                            fixedHeader: {
+                                header: true,
+                                footer: true
+                            },
+                            scrollY: 500,
+                            scrollX: true,
+                            initComplete: function () {
+                                // Apply the search
+                                this.api()
+                                    .columns()
+                                    .every(function () {
+                                        var that = this;
+
+                                        $('input', this.footer()).on('keyup change clear', function () {
+                                            if (that.search() !== this.value) {
+                                                that.search(this.value).draw();
+                                            }
+                                        });
+                                    });
+                            },
+                        });
+
+            table.columns().eq( 0 ).each( function ( colIdx ) {
+                $( 'input', table.column( colIdx ).header() ).on( 'keyup change', function () {
+                    table
+                        .column( colIdx )
+                        .search( this.value )
+                        .draw();
+                    } );
+                } );
             /*
             $("#"+idTable).DataTable({
                 processing: true,
@@ -166,7 +220,7 @@
                 ]
             });
             */
-           
+
         }
     </script>
 @stop

@@ -20,7 +20,7 @@ class ExtractionReportExport implements FromCollection,WithHeadings
     {
         //return ExtractionReportModel::all();
         //return ExtractionReportModel::where('extractionHeaderId',$this->idHeader)->get()->withHeadings();
-        return ExtractionReportModel::select('dua','fecha','codigo','importador','embarcadorExportador','qty2','und2','fobTotal','fobUnd1','paisOrigen','paisCompra','puertoEmbarque','marca')
+        return ExtractionReportModel::select('dua','fecha','codigo','codImporter','codProvider','qty2','und2','fobTotal','fobUnd1','codPaisOrigen','codPaisCompra','puertoEmbarque','marca')
                                     ->where('extractionHeaderId',$this->idHeader)
                                     ->get();
         /*

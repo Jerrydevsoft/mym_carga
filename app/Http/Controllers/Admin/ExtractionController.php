@@ -8,6 +8,7 @@ use App\Models\Admin\ExtractionModel;
 use App\Models\Admin\ExtractionReportModel;
 use Illuminate\Support\Facades\Validator;
 use App\Jobs\ExtractionDataSearch;
+use App\Jobs\UpdateCountries;
 use App\Imports\ExtractionImport;
 use App\Exports\ExtractionReportExport;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class ExtractionController extends Controller
         //Excel::import(new ExtractionImport, request()->file('your_file'));
 
         //return redirect('/')->with('success', 'All good!');
+        UpdateCountries::dispatch();
         return view('admin.extraction.import');
     }
 
@@ -50,6 +52,7 @@ class ExtractionController extends Controller
             $extractionHeader->status="STARTED";
             $extractionHeader->save();
             if ($extractionHeader->id > 0) {
+                // $extractionHeader->id = 3;
                 $idHeader = $extractionHeader->id;
                 $response = Excel::import(new ExtractionImport($idHeader,$responsable), request()->file('excelin')->store('temp'));
                 ExtractionDataSearch::dispatch($extractionHeader);

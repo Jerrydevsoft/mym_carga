@@ -59,8 +59,8 @@ class ExtractionImport implements ToModel, WithStartRow
             'descripcion3'              => $row['26'],
             'descripcion4'              => $row['27'],
             'descripcion5'              => $row['28'],
-            'marca'                     => $row['29'],
-            'codigo'                    => $row['30'],
+            'marca'                     => '',
+            'codigo'                    => '',
             'opcional1'                 => (!isset($row['31']))?'':$row['31'],
             'opcional2'                 => (!isset($row['32']))?'':$row['32'],
             'opcional3'                 => (!isset($row['33']))?'':$row['33'],
@@ -69,10 +69,14 @@ class ExtractionImport implements ToModel, WithStartRow
             'usrCreated'                => $this->responsable,
             'usrModified'               => NULL,
             'status'                    => 'CHARGED',
+            'statusArticle'             => 'CHARGED',
+            'statusProvider'            => 'CHARGED',
+            'statusImporter'            => 'CHARGED',
             'datetimecreated'           => time(),
             'datetimemodified'          => NULL,
             'extractionHeaderId'        => $this->idHeader,
-            'typeFoundColor'            => 'badge bg-primary'
+            'typeFoundColor'            => 'badge bg-primary',
+            'typeFoundArticle'          => 'badge bg-primary'
         ]);
     }
 
