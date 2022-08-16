@@ -61,7 +61,8 @@
                                     <td>{{ $registro->datetimecreated }}</td>
                                     <td>{{ $registro->usrCreated }}</td>
                                     <td>
-                                        <a href="{{ route('extraccion.data.revision', ['idHeader' => $registro->id])  }}">revisar</a>
+                                        <a href="{{ route('extraccion.data.revision', ['idHeader' => $registro->id])  }}">revisar</a>&nbsp;&nbsp;
+                                        <a href="javascript:void(0);" onclick="repeatProcess({{$registro->id}})">Procesar</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -76,11 +77,41 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>
+
+        .dataTables_paginate a {
+            padding: 6px 9px !important;
+            background: #edf6f9 !important;
+            border-color: #b8bdc1 !important;
+            border-radius: 5px;
+            cursor: pointer;
+
+        }
+
+    </style>
 @stop
 
 @section('js')
     <script>
     $(document).ready(function(){
         $("#tableHeader").DataTable();
+    });
+
+    function repeatProcess(idHeader){
+        if (idHeader > 0) {
+            $.ajax(
+                {
+                    url: "{{ route('extraccion.data.reprocesar') }}",
+                    type: 'POST',
+                    data:{
+                        idHeader: idHeader,
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function(result){
+                        console.log(result);
+                        alert("La información se esta volviendo a procesar");
+                }});
+        }
+    }
     </script>
 @stop

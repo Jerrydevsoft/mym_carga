@@ -9,40 +9,24 @@
 @section('content')
         <div class="card">
             <div class="card-header">
-                Filtro de Busqueda
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <input class="form-control" type="text" id="searchDescription" name="searchDescription" value="" placeholder="Buscar por descripcion">
-                    </div>
-                    <div class="col-md-4">
-                        &nbsp;
-                    </div>
-                    <div class="col-md-4">
-                        <select id="searchStatus" name="searchStatus" class="form-control">
-                            <option value="CARGA_INICIAL">CARGA_INICIAL</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br>
-        <div class="card">
-            <div class="card-header">
                 <h3>Listado</h3>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-12" style="text-align: right;">
+                    <div class="col-md-12 dropdown" style="text-align: right;">
                         <input type="hidden" value="{{ $objHeader->id }}" id="idHeader">
-                        <a href="{{ route('extraccion.exportData.excel', ['idHeader' => $objHeader->id])  }}" class="btn btn-success">Exportar</a>
+                        <a id="my-dropdown" href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Exportar</a>
+                        <ul class="dropdown-menu" style="text-align: left;">
+                            <li class="list-group-item"><a href="{{ route('reporte.exportData.excel', ['idHeader' => $objHeader->id])  }}">Reporte Final</a></li>
+                            <li class="list-group-item"><a href="{{ route('reporte.exportDataGeneral.excel', ['idHeader' => $objHeader->id])  }}">Reporte General</a></li>
+                        </ul>
                     </div>
                     <br>
-                    <div class="col-md-12" style="height: 800px;">
-                        <table class="table table-hover nowrap" id="tableDetail" style="width:100%">
+                    <div class="col-md-12 table-responsive" style="height: 800px;">
+                        <table class="display table table-striped table-hover" id="tableDetail" style="width:100%">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>DUA</th>
                                     <th>FECHA</th>
                                     <th>ETA</th>
@@ -75,6 +59,7 @@
                             @if (!is_null($lstDetalle))
                                 @foreach($lstDetalle as $detalle)
                                     <tr>
+                                        <td>{{ $detalle->id }}</td>
                                         <td>{{ $detalle->dua }}</td>
                                         <td>{{ $detalle->fecha }}</td>
                                         <td>{{ $detalle->eta }}</td>
@@ -107,7 +92,7 @@
                                 @endforeach
                             @endif
                             </tbody>
-                            <tfoot>
+                            {{-- <tfoot>
                                 <tr>
                                     <th>DUA</th>
                                     <th>FECHA</th>
@@ -135,8 +120,9 @@
                                     <th>NOMBRE MARCA</th>
                                     <th>CÓDIGO</th>
                                     <th>ESTADO CARGA</th>
+                                    <th>#</th>
                                 </tr>
-                            </tfoot>
+                            </tfoot> --}}
                         </table>
                     </div>
                 </div>
@@ -147,18 +133,39 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>
+
+        .dataTables_paginate a {
+            padding: 6px 9px !important;
+            background: #edf6f9 !important;
+            border-color: #b8bdc1 !important;
+            border-radius: 5px;
+            cursor: pointer;
+
+        }
+
+    </style>
 @stop
 
 @section('js')
     <script>
+        var editor;
         $(document).ready(function(){
-            extraction_cargarDatatablePost('tableDetail');
+            extraction_cargarDatatablePost();
         });
 
-        function extraction_cargarDatatablePost(idTable){
-            $('#tableDetail tfoot th').each( function () {
+        function extraction_cargarDatatablePost(){
+            var column = 0;
+            $('#tableDetail thead th').each( function () {
+                column++;
                 var title = $(this).text();
-                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+                var html = '<div class="row">';
+                    html += '<div class="col-12">' + title +'</div>';
+                    html += '<div class="col-12"><input type="text" placeholder="Search ' + title + '" /></div>';
+                    html += '</div>';
+                if (column < 27) {
+                    $(this).html(html);
+                }
             } );
             var table = $('#tableDetail').DataTable({
                             "pageLength": 100,
@@ -167,60 +174,173 @@
                                 header: true,
                                 footer: true
                             },
+                            //"searching": false,
+                            //"bFilter": false,
                             scrollY: 500,
                             scrollX: true,
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: "{{ route('extraccion.data.upload') }}",
+                                type: 'POST',
+                                data:{
+                                idHeader: $('#idHeader').val(),
+                                "_token": "{{ csrf_token() }}"
+                                }
+
+                            },
+                            'order': [],
+                            columns: [
+                                { data: 'id', name: 'id',searchable: true },
+                                { data: 'dua', name: 'dua',searchable: true },
+                                { data: 'fecha', name: 'fecha',searchable: true },
+                                { data: 'eta', name: 'eta',searchable: true },
+                                { data: 'importador', name: 'importador',searchable: true },
+                                { data: 'embarcadorExportador', name: 'embarcadorExportador',searchable: true },
+                                { data: 'pesoBruto', name: 'pesoBruto',searchable: true },
+                                { data: 'pesoNeto', name: 'pesoNeto',searchable: true },
+                                { data: 'qty1', name: 'qty1',searchable: true },
+                                { data: 'und2', name: 'und2',searchable: true },
+                                { data: 'qty2', name: 'qty2',searchable: true },
+                                { data: 'und2', name: 'und2',searchable: true },
+                                { data: 'fobTotal', name: 'fobTotal',searchable: true },
+                                { data: 'fobUnd1', name: 'fobUnd1',searchable: true },
+                                { data: 'fobUnd2', name: 'fobUnd2',searchable: true },
+                                { data: 'codPaisOrigen', name: 'codPaisOrigen',searchable: true },
+                                { data: 'paisOrigen', name: 'paisOrigen',searchable: true },
+                                { data: 'codPaisCompra', name: 'codPaisCompra',searchable: true },
+                                { data: 'paisCompra', name: 'paisCompra',searchable: true },
+                                { data: 'puertoEmbarque', name: 'puertoEmbarque',searchable: true },
+                                { data: 'agenteAduanero', name: 'agenteAduanero',searchable: true },
+                                { data: 'estado', name: 'estado',searchable: true },
+                                { data: 'descripcionComercial', name: 'descripcionComercial',searchable: true },
+                                { data: 'marca', name: 'marca',searchable: true },
+                                { data: 'nameMarca', name: 'nameMarca',searchable: true },
+                                { data: 'codigo', name: 'codigo',searchable: true },
+                                { data: 'status', name: 'status',searchable: true }
+                            ],
+                            /*
+                            "columnDefs":[
+                                {
+                                    "targets":26,
+                                    "sortable":false,
+                                    "render": function(data,type,full,meta){
+                                        return "<center>"+
+                                                "<button type='button' class='btn btn-primary btn-sm btnEditar' onclick='editRow("+full.id+")'>"+
+                                                "<i class='fas fa-pencil-alt'></i>"+
+                                                "</button>"+
+                                                "</center>";
+                                    }
+                                }
+                            ],
+                            */
+                            "select": {
+                                style:    'os',
+                                selector: 'td:first-child'
+                            },
                             initComplete: function () {
                                 // Apply the search
                                 this.api()
                                     .columns()
                                     .every(function () {
                                         var that = this;
-
-                                        $('input', this.footer()).on('keyup change clear', function () {
-                                            if (that.search() !== this.value) {
-                                                that.search(this.value).draw();
+                                        $('input', this.header()).on('keyup change clear', function () {
+                                            if (this.value.length > 2 || this.value.length == 0) {
+                                                if (that.search() !== this.value) {
+                                                    that.search(this.value).draw();
+                                                }
                                             }
                                         });
                                     });
-                            },
+                            }
                         });
 
             table.columns().eq( 0 ).each( function ( colIdx ) {
                 $( 'input', table.column( colIdx ).header() ).on( 'keyup change', function () {
-                    table
-                        .column( colIdx )
-                        .search( this.value )
-                        .draw();
-                    } );
+                        if (this.value.length > 2 || this.value.length == 0) {
+                            table
+                            .column( colIdx )
+                            .search( this.value )
+                            .draw();
+                        }
+                    });
                 } );
-            /*
-            $("#"+idTable).DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('extraccion.data.table') }}",
-                    type: 'POST',
-                    'data' : { 'idHeader' : $("#idHeader").val() },
-                },
-                'order': [],
-                columns: [
-                    { data: 'dua' },
-                    { data: 'fecha' },
-                    { data: 'codigo' },
-                    { data: 'importador' },
-                    { data: 'embarcadorExportador' },
-                    { data: 'qty2' },
-                    { data: 'und2' },
-                    { data: 'fobTotal' },
-                    { data: 'fobUnd1' },
-                    { data: 'paisOrigen' },
-                    { data: 'paisCompra' },
-                    { data: 'puertoEmbarque' },
-                    { data: 'marca' },
-                ]
-            });
-            */
 
+
+            $('#tableDetail').on('draw.dt', function(){
+                $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+                $('#tableDetail').Tabledit({
+                url:"{{ route('extraccion.data.upload.action') }}",
+                dataType:'json',
+                columns:{
+                    identifier : [0, 'id'],
+                    editable:[
+                        [1,  'dua'],
+                        [2,  'fecha'],
+                        [3,  'eta'],
+                        [4,  'importador'],
+                        [5,  'embarcadorExportador'],
+                        [6,  'pesoBruto'],
+                        [7,  'pesoNeto'],
+                        [8,  'qty1'],
+                        [9,  'und2'],
+                        [10, 'qty2'],
+                        [11, 'und2'],
+                        [12, 'fobTotal'],
+                        [13, 'fobUnd1'],
+                        [14, 'fobUnd2'],
+                        [15, 'codPaisOrigen'],
+                        [16, 'paisOrigen'],
+                        [17, 'codPaisCompra'],
+                        [18, 'paisCompra'],
+                        [19, 'puertoEmbarque'],
+                        [20, 'agenteAduanero'],
+                        [21, 'estado'],
+                        [22, 'descripcionComercial'],
+                        [23, 'marca'],
+                        [24, 'nameMarca'],
+                        [25, 'codigo'],
+                        [26, 'status']
+                    ]
+                },
+                buttons: {
+                    edit: {
+                        class: 'btn btn-sm btn-default',
+                        html: '<i class="fas fa-pencil-alt"></i>',
+                        action: 'edit'
+                    },
+                    delete: {
+                        class: 'btn btn-sm btn-default',
+                        html: '<i class="fas fa-trash-alt"></i>',
+                        action: 'delete'
+                    },
+                    save: {
+                        class: 'btn btn-sm btn-success',
+                        html: 'Guardar'
+                    },
+                    restore: {
+                        class: 'btn btn-sm btn-warning',
+                        html: 'Cancelar',
+                        action: 'restore'
+                    }
+                },
+                restoreButton:false,
+                onSuccess:function(data, textStatus, jqXHR)
+                {
+                    console.log(data);
+                    if(data.action == 'delete')
+                    {
+                    $('#' + data.id).remove();
+                    $('#tableDetail').DataTable().ajax.reload();
+                    }
+                }
+
+                });
+            });
+        }
+
+        function editRow(id){
+            console.log(data);
         }
     </script>
 @stop

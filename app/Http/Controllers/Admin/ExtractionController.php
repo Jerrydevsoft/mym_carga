@@ -11,6 +11,7 @@ use App\Jobs\ExtractionDataSearch;
 use App\Jobs\UpdateCountries;
 use App\Imports\ExtractionImport;
 use App\Exports\ExtractionReportExport;
+use App\Exports\ExtractionReportGeneralExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -77,7 +78,8 @@ class ExtractionController extends Controller
     public function getListByHeaderId($idHeader){
         if ($idHeader > 0) {
             $objHeader = ExtractionHeaderModel::find($idHeader);
-            $lstDetalle = ExtractionModel::where('extractionHeaderId',$idHeader)->get()->sortByDesc('id');
+            //$lstDetalle = ExtractionModel::where('extractionHeaderId',$idHeader)->limit(1000)->get()->sortByDesc('id');
+            $lstDetalle = NULL;
             return view('admin.extraction.data_detail', compact('objHeader','lstDetalle'));
         }else{
             return redirect()->to(url('extraccion/import'))->with('error',"Hubo problemas con el archivo");
@@ -86,11 +88,192 @@ class ExtractionController extends Controller
 
     /* ::: exportamos la data :::: */
     public function getExcelDataByHeader($idHeader){
-        return Excel::download(new ExtractionReportExport($idHeader), 'reporte_extracction.xlsx');
+        $fecha = date('d-m-Y');
+        return Excel::download(new ExtractionReportExport($idHeader), 'reporte_final_'.$fecha.'.xlsx');
     }
 
-    public function getTableByHeaderId(Request $request){
-        dd($request);
+    public function getExcelDataGeneralByHeader($idHeader){
+        $fecha = date('d-m-Y');
+        return Excel::download(new ExtractionReportGeneralExport($idHeader), 'reporte_general_'.$fecha.'.xlsx');
+    }
+
+    public function getListDataUpload (Request $request){
+        //var_dump($request->input('draw'));
+        $idHeader = $request->get('idHeader');
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $rowperpage = $request->get('length');
+        // Total records
+        $totalRecords = ExtractionModel::selectRaw('count(*) as allcount')->where('extractionHeaderId',$idHeader)->count();
+        $totalRecordswithFilter = ExtractionModel::select('count(*) as allcount')->where('extractionHeaderId',$idHeader)->count();
+        $lstDetalle = ExtractionModel::select('*')->where('extractionHeaderId',$idHeader)->where('isActive',1)->where('isDeleted',0);
+        $columnas = $request->input('columns');
+        // recorremos por los where
+        if (count($columnas)>0) {
+            foreach ($columnas as $c => $col) {
+                if ($col['searchable']) {
+                    if (!is_null($col['search']['value'])) {
+                        $lstDetalle->whereRaw($col['name']." like '%".$col['search']['value']."%'");
+                    }
+                }
+            }
+        }
+        $orderBy = '';
+        //recorremos por los order by
+        if (count($columnas)>0) {
+            foreach ($columnas as $c => $col) {
+                if ($col['searchable']) {
+                    if (!is_null($col['search']['value'])) {
+                        $orderBy = "WHEN ".$col['name']." like '%".$col['search']['value']."' then ".($c+1);
+                    }
+                }
+            }
+        }
+
+        if (strlen(trim($orderBy))>0) {
+            $lstDetalle->orderByRaw('CASE '.$orderBy.' ELSE 27 END');
+        }
+
+        $lstDetalle = $lstDetalle->skip($start)->take($rowperpage)->get();
+        /*
+        if (!is_null($request->input('search'))) {
+            $search = $request->input('search');
+            $searchValue = $search['value'];
+            $columnas = $request->input('columns');
+            if (!is_null($searchValue) && count($columnas)>0) {
+                foreach ($columnas as $c => $col) {
+                    if ($col['searchable']) {
+                        dd($request->request->all());
+                        if (!is_null($col['search']['value'])) {
+                            # code...
+                        }
+                    }
+                }
+            }
+        }*/
+
+        $data_arr = array();
+
+        foreach($lstDetalle as $detalle){
+
+           $data_arr[] = array(
+               "id"                             => $detalle->id,
+               "dua"                            => $detalle->dua,
+               "fecha"                          => $detalle->fecha,
+               "eta"                            => $detalle->eta,
+               "importador"                     => $detalle->importador,
+               "embarcadorExportador"           => $detalle->embarcadorExportador,
+               "pesoBruto"                      => $detalle->pesoBruto,
+               "pesoNeto"                       => $detalle->pesoNeto,
+               "qty1"                           => $detalle->qty1,
+               "und1"                           => $detalle->und1,
+               "qty2"                           => $detalle->qty2,
+               "und2"                           => $detalle->und2,
+               "fobTotal"                       => $detalle->fobTotal,
+               "fobUnd1"                        => $detalle->fobUnd1,
+               "fobUnd2"                        => $detalle->fobUnd2,
+               "codPaisOrigen"                  => $detalle->codPaisOrigen,
+               "paisOrigen"                     => $detalle->paisOrigen,
+               "codPaisCompra"                  => $detalle->codPaisCompra,
+               "paisCompra"                     => $detalle->paisCompra,
+               "puertoEmbarque"                 => $detalle->puertoEmbarque,
+               "agenteAduanero"                 => $detalle->agenteAduanero,
+               "estado"                         => $detalle->estado,
+               "descripcionComercial"           => $detalle->descripcionComercial,
+               "marca"                          => $detalle->marca,
+               "nameMarca"                      => $detalle->nameMarca,
+               "codigo"                         => $detalle->codigo,
+               "status"                         => $detalle->status
+           );
+        }
+
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr
+         );
+        echo json_encode($response);
+    }
+
+    public function executeActionData(Request $request){
+        $id = $request->get('id');
+        $accion = $request->get('action');
+        if($accion == 'edit'){
+            $data = array(
+            'dua'                   => $request->get('dua'),
+            'fecha'                 => $request->get('fecha'),
+            'eta'                   => $request->get('eta'),
+            'importador'            => $request->get('importador'),
+            'embarcadorExportador'  => $request->get('embarcadorExportador'),
+            'pesoBruto'             => $request->get('pesoBruto'),
+            'pesoNeto'              => $request->get('pesoNeto'),
+            'qty1'                  => $request->get('qty1'),
+            'und2'                  => $request->get('und2'),
+            'qty2'                  => $request->get('qty2'),
+            'und2'                  => $request->get('und2'),
+            'fobTotal'              => $request->get('fobTotal'),
+            'fobUnd1'               => $request->get('fobUnd1'),
+            'fobUnd2'               => $request->get('fobUnd2'),
+            'codPaisOrigen'         => $request->get('codPaisOrigen'),
+            'paisOrigen'            => $request->get('paisOrigen'),
+            'codPaisCompra'         => $request->get('codPaisCompra'),
+            'paisCompra'            => $request->get('paisCompra'),
+            'puertoEmbarque'        => $request->get('puertoEmbarque'),
+            'agenteAduanero'        => $request->get('agenteAduanero'),
+            'estado'                => $request->get('estado'),
+            'descripcionComercial'  => $request->get('descripcionComercial'),
+            'marca'                 => $request->get('marca'),
+            'nameMarca'             => $request->get('nameMarca'),
+            'codigo'                => $request->get('codigo'),
+            'status'                => $request->get('status')
+            );
+
+            ExtractionModel::where('id', $id)
+                    ->update($data);
+            $status = 200;
+            $message = "Se modificó con éxito";
+            $rspta = array(
+                'status' => $status,
+                'message' => $message,
+                'action' => $accion
+            );
+            return json_encode($rspta);
+        }
+        if($accion == 'delete'){
+            $data = array(
+                'isActive'  => 0,
+                'isDeleted' => 1
+            );
+            ExtractionModel::where('id', $id)
+                    ->update($data);
+            $status = 200;
+            $message = "Se eliminó con éxito";
+            $rspta = array(
+                'status' => $status,
+                'message' => $message,
+                'action' => $accion
+            );
+            return json_encode($rspta);
+        }
+    }
+
+    public function repeatProcess(Request $request){
+        $idHeader = $request->get('idHeader');
+        $extractionHeader = ExtractionHeaderModel::find($idHeader);
+        if (is_object($extractionHeader)) {
+            ExtractionDataSearch::dispatch($extractionHeader);
+            $status = 200;
+            $msg = "La tarea se está ejecutando correctamente";
+        }else{
+            $status = 400;
+            $msg = "No se encontró información sobre esta carga";
+        }
+        $result = [
+            'status' => $status,
+            'message' => $msg
+        ];
+        return json_encode($result);
     }
 
     public function test(){
