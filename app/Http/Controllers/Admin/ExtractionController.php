@@ -38,6 +38,8 @@ class ExtractionController extends Controller
     }
 
     public function importData(Request $request){
+        set_time_limit(500);
+        ini_set('memory_limit', '2048M');
         $responsable = $request->input('responsable');
         $idHeader = 0;
 
@@ -103,16 +105,21 @@ class ExtractionController extends Controller
         $draw = $request->get('draw');
         $start = $request->get('start');
         $rowperpage = $request->get('length');
+        //dd($request->all());
         // Total records
         $totalRecords = ExtractionModel::selectRaw('count(*) as allcount')->where('extractionHeaderId',$idHeader)->count();
-        $totalRecordswithFilter = ExtractionModel::select('count(*) as allcount')->where('extractionHeaderId',$idHeader)->count();
-        $lstDetalle = ExtractionModel::select('*')->where('extractionHeaderId',$idHeader)->where('isActive',1)->where('isDeleted',0);
+        //$totalRecordswithFilter = ExtractionModel::select('count(*) as allcount')->where('extractionHeaderId',$idHeader)->count();
+        $select = '*';
+        $lstDetalle = ExtractionModel::where('extractionHeaderId',$idHeader)->where('isActive',1)->where('isDeleted',0);
         $columnas = $request->input('columns');
         // recorremos por los where
         if (count($columnas)>0) {
             foreach ($columnas as $c => $col) {
                 if ($col['searchable']) {
                     if (!is_null($col['search']['value'])) {
+                        $select.=',IF(';
+                        $select.='LOCATE("'.$col['search']['value'].'",'.$col['name'].') > 0,';
+                        $select.= 'LOCATE("'.$col['search']['value'].'",'.$col['name'].'),"NOT FOUND") AS '.$col['name'].'_'.$c;
                         $lstDetalle->whereRaw($col['name']." like '%".$col['search']['value']."%'");
                     }
                 }
@@ -120,6 +127,7 @@ class ExtractionController extends Controller
         }
         $orderBy = '';
         //recorremos por los order by
+        /*
         if (count($columnas)>0) {
             foreach ($columnas as $c => $col) {
                 if ($col['searchable']) {
@@ -131,10 +139,49 @@ class ExtractionController extends Controller
         }
 
         if (strlen(trim($orderBy))>0) {
-            $lstDetalle->orderByRaw('CASE '.$orderBy.' ELSE 27 END');
+            $lstDetalle->orderByRaw('CASE '.$orderBy.' ELSE 20 END');
+        }
+        */
+        $lstDetalle->selectRaw($select);
+        if (count($columnas)>0) {
+            foreach ($columnas as $c => $col) {
+                if ($col['searchable']) {
+                    if (!is_null($col['search']['value'])) {
+                       // $orderBy = "WHEN ".$col['name']." like '%".$col['search']['value']."' then ".($c+1);
+                       $lstDetalle->orderBy($col['name']."_".$c,'ASC');
+                    }
+                }
+            }
         }
 
+        // if (strlen(trim($orderBy))>0) {
+        //     $lstDetalle->orderByRaw('CASE '.$orderBy.' ELSE 20 END');
+        // }
+
+        //$recordsWithFilter = $lstDetalle;
         $lstDetalle = $lstDetalle->skip($start)->take($rowperpage)->get();
+        //$limit = $totalRecords - $start;
+        // dd($limit);
+
+        // dd($lstDetalle);
+        // dd($recordsWithFilter->count());
+        $lstDetalleCount = ExtractionModel::where('extractionHeaderId',$idHeader)->where('isActive',1)->where('isDeleted',0);
+        $columnas = $request->input('columns');
+        // recorremos por los where
+        if (count($columnas)>0) {
+            foreach ($columnas as $c => $col) {
+                if ($col['searchable']) {
+                    if (!is_null($col['search']['value'])) {
+                        $select.=',IF(';
+                        $select.='LOCATE("'.$col['search']['value'].'",'.$col['name'].') > 0,';
+                        $select.= 'LOCATE("'.$col['search']['value'].'",'.$col['name'].'),"NOT FOUND") AS '.$col['name'].'_'.$c;
+                        $lstDetalleCount->whereRaw($col['name']." like '%".$col['search']['value']."%'");
+                    }
+                }
+            }
+        }
+        $totalRecordswithFilter = $lstDetalleCount->count();
+        // dd($lstDetalle);
         /*
         if (!is_null($request->input('search'))) {
             $search = $request->input('search');
@@ -153,7 +200,6 @@ class ExtractionController extends Controller
         }*/
 
         $data_arr = array();
-
         foreach($lstDetalle as $detalle){
 
            $data_arr[] = array(
@@ -161,7 +207,9 @@ class ExtractionController extends Controller
                "dua"                            => $detalle->dua,
                "fecha"                          => $detalle->fecha,
                "eta"                            => $detalle->eta,
+               "codImporter"                    => $detalle->codImporter,
                "importador"                     => $detalle->importador,
+               "codProvider"                    => $detalle->codProvider,
                "embarcadorExportador"           => $detalle->embarcadorExportador,
                "pesoBruto"                      => $detalle->pesoBruto,
                "pesoNeto"                       => $detalle->pesoNeto,
@@ -183,7 +231,10 @@ class ExtractionController extends Controller
                "marca"                          => $detalle->marca,
                "nameMarca"                      => $detalle->nameMarca,
                "codigo"                         => $detalle->codigo,
-               "status"                         => $detalle->status
+               "status"                         => $detalle->status,
+               'statusImporter'                 => $detalle->statusImporter,
+               'statusProvider'                 => $detalle->statusProvider,
+               'statusArticle'                  => $detalle->statusArticle
            );
         }
 
@@ -191,6 +242,8 @@ class ExtractionController extends Controller
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
+            //"iTotalRecords" => count($lstDetalle),
+            //"iTotalDisplayRecords" => count($lstDetalle),
             "aaData" => $data_arr
          );
         echo json_encode($response);
@@ -200,33 +253,55 @@ class ExtractionController extends Controller
         $id = $request->get('id');
         $accion = $request->get('action');
         if($accion == 'edit'){
+            // $data = array(
+            // 'dua'                   => $request->get('dua'),
+            // 'fecha'                 => $request->get('fecha'),
+            // 'eta'                   => $request->get('eta'),
+            // 'importador'            => $request->get('importador'),
+            // 'embarcadorExportador'  => $request->get('embarcadorExportador'),
+            // 'pesoBruto'             => $request->get('pesoBruto'),
+            // 'pesoNeto'              => $request->get('pesoNeto'),
+            // 'qty1'                  => $request->get('qty1'),
+            // 'und2'                  => $request->get('und2'),
+            // 'qty2'                  => $request->get('qty2'),
+            // 'und2'                  => $request->get('und2'),
+            // 'fobTotal'              => $request->get('fobTotal'),
+            // 'fobUnd1'               => $request->get('fobUnd1'),
+            // 'fobUnd2'               => $request->get('fobUnd2'),
+            // 'codPaisOrigen'         => $request->get('codPaisOrigen'),
+            // 'paisOrigen'            => $request->get('paisOrigen'),
+            // 'codPaisCompra'         => $request->get('codPaisCompra'),
+            // 'paisCompra'            => $request->get('paisCompra'),
+            // 'puertoEmbarque'        => $request->get('puertoEmbarque'),
+            // 'agenteAduanero'        => $request->get('agenteAduanero'),
+            // 'estado'                => $request->get('estado'),
+            // 'descripcionComercial'  => $request->get('descripcionComercial'),
+            // 'marca'                 => $request->get('marca'),
+            // 'nameMarca'             => $request->get('nameMarca'),
+            // 'codigo'                => $request->get('codigo'),
+            // 'status'                => $request->get('status')
+            // );
+
             $data = array(
-            'dua'                   => $request->get('dua'),
-            'fecha'                 => $request->get('fecha'),
-            'eta'                   => $request->get('eta'),
-            'importador'            => $request->get('importador'),
-            'embarcadorExportador'  => $request->get('embarcadorExportador'),
-            'pesoBruto'             => $request->get('pesoBruto'),
-            'pesoNeto'              => $request->get('pesoNeto'),
-            'qty1'                  => $request->get('qty1'),
-            'und2'                  => $request->get('und2'),
-            'qty2'                  => $request->get('qty2'),
-            'und2'                  => $request->get('und2'),
-            'fobTotal'              => $request->get('fobTotal'),
-            'fobUnd1'               => $request->get('fobUnd1'),
-            'fobUnd2'               => $request->get('fobUnd2'),
-            'codPaisOrigen'         => $request->get('codPaisOrigen'),
-            'paisOrigen'            => $request->get('paisOrigen'),
-            'codPaisCompra'         => $request->get('codPaisCompra'),
-            'paisCompra'            => $request->get('paisCompra'),
-            'puertoEmbarque'        => $request->get('puertoEmbarque'),
-            'agenteAduanero'        => $request->get('agenteAduanero'),
-            'estado'                => $request->get('estado'),
-            'descripcionComercial'  => $request->get('descripcionComercial'),
-            'marca'                 => $request->get('marca'),
-            'nameMarca'             => $request->get('nameMarca'),
-            'codigo'                => $request->get('codigo'),
-            'status'                => $request->get('status')
+                'dua'                   => $request->get('dua'),
+                'fecha'                 => $request->get('fecha'),
+                'codigo'                => $request->get('codigo'),
+                'codImporter'           => $request->get('codImporter'),
+                'importador'            => $request->get('importador'),
+                'codProvider'           => $request->get('codProvider'),
+                'embarcadorExportador'  => $request->get('embarcadorExportador'),
+                'qty2'                  => $request->get('qty2'),
+                'und2'                  => $request->get('und2'),
+                'fobTotal'              => $request->get('fobTotal'),
+                'fobUnd2'               => $request->get('fobUnd2'),
+                'codPaisOrigen'         => $request->get('codPaisOrigen'),
+                'paisOrigen'            => $request->get('paisOrigen'),
+                'codPaisCompra'         => $request->get('codPaisCompra'),
+                'paisCompra'            => $request->get('paisCompra'),
+                'puertoEmbarque'        => $request->get('puertoEmbarque'),
+                'descripcionComercial'  => $request->get('descripcionComercial'),
+                'marca'                 => $request->get('marca'),
+                'nameMarca'             => $request->get('nameMarca')
             );
 
             ExtractionModel::where('id', $id)

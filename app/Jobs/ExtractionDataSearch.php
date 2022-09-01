@@ -51,11 +51,11 @@ class ExtractionDataSearch implements ShouldQueue
     {
 
         if ($this->extractionHeader->id > 0) {
-            //$this->processMissingBrand();
-            //$this->processMissingArticleBrand();
-            //$this->processMissingProvider();
+            $this->processMissingBrand();
+            $this->processMissingArticleBrand();
+            $this->processMissingProvider();
             $this->processMissingCustomer();//importadores
-            //$this->processMissingCountry();
+            $this->processMissingCountry();
         }
 
         //$lstProviders = DB::table("extraction_subida")->selectRaw('DISTINCT(marca) as codMarca')->where('extractionHeaderId', $this->extractionHeader->id)->get();
@@ -134,23 +134,30 @@ class ExtractionDataSearch implements ShouldQueue
         $lstBrandFounded = DB::table("extraction_subida")->selectRaw('DISTINCT(marca) as codMarca')->where('extractionHeaderId', $this->extractionHeader->id)->get();
         if (count($lstBrandFounded)>0) {
             foreach ($lstBrandFounded as $b => $brand) {
-                print_r("orden: ".$b." - Marca: ".$brand->codMarca."\n" );
+                //print_r("fila articulo: ".$b." - Marca: ".$brand->codMarca."\n" );
                 //if ($brand->codMarca != '001') {
                 $this->searchArticle($brand->codMarca);
                 //}
             }
         }
+
+        //actualizamos los registros que no se pudieron encontrar
+        print_r(":::::::::::::: ACTUALIZAMOS LOS REGISTROS NO ENCONTRADOS::::::::::::\n" );
+        DB::table('extraction_subida')->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('statusArticle', 'CHARGED')
+                                    ->update(array('statusArticle' => 'NOT_FOUND'));
     }
 
     function processMissingCustomer(){
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
         print_r(":::::::::::: regularizamos_importadores :::::::::::::::\n" );
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
-        $lstCustomer = DB::table("extraction_subida")->selectRaw('DISTINCT(TRIM(importador)) as customer')->where('extractionHeaderId', $this->extractionHeader->id)->get();
+        $lstCustomer = DB::table("extraction_subida")->selectRaw('DISTINCT(TRIM(codTributario)) as customer')->where('extractionHeaderId', $this->extractionHeader->id)->get();
         if (count($lstCustomer) > 0) {
             //var_dump($lstCustomer);
             foreach ($lstCustomer as $c => $customer) {
-                $response = Http::post($this->urlBase .'customers/getCustomerByName', [
+                /*
+                $response = Http::post($this->urlBase .'customers/getCustomerByIdentification', [
                     'customer_name' => 'EMP.DE TRANSP.NORTE'
                 ]);
                 $data = $response->body();
@@ -161,26 +168,66 @@ class ExtractionDataSearch implements ShouldQueue
                 //var_dump($data[0]);
                 //var_dump($data[0]['customer_code']);
                 die;
+                */
+                print_r("fila customer: ".$c." documento: ".$customer->customer."\n" );
+                $objCustomer = json_decode(file_get_contents($this->urlBase .'customers/getCustomerByIdentification/'.$customer->customer));
+                if (!is_null($objCustomer) && is_object($objCustomer)) {
+                    DB::table('extraction_subida')->where('codTributario', $customer->customer)->update(array('statusImporter' => 'FOUNDED', 'codImporter' => $objCustomer->customer_code));
+                }
             }
         }
+        //actualizamos los registros que no se pudieron encontrar
+        print_r(":::::::::::::: ACTUALIZAMOS LOS REGISTROS NO ENCONTRADOS::::::::::::\n" );
+        DB::table('extraction_subida')->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('statusImporter', 'CHARGED')
+                                    ->update(array('statusImporter' => 'NOT_FOUND'));
 
+    }
 
+    function processMissingProviderOld(){
+        print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+        print_r(":::::: regularizamos_proveedores :::::::::\n" );
+        print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+        $lstProviders = DB::table("extraction_subida")->selectRaw('DISTINCT(TRIM(embarcadorExportador)) as provider')
+                                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                                    ->whereIn('statusProvider',['CHARGED','PARTIAL_FOUND'])
+                                                    ->where('isActive',1)
+                                                    ->where('isDeleted',0)
+                                                    ->get();
+        if (count($lstProviders) > 0) {
+            foreach ($lstProviders as $p => $provider) {
+                print_r("fila proveedores : ".$p." razon social:".$provider->provider ."\n" );
+                $response = Http::post($this->urlBase .'general/getProviders', [
+                    'provName' => $provider->provider
+                ])->json();
+                var_dump($response);
+                //$this->searchProvider($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false);
+            }
+        }
     }
 
     function processMissingProvider(){
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
         print_r(":::::: regularizamos_proveedores_importadores :::::::::\n" );
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
-        $lstProviders = json_decode(file_get_contents($this->urlBase .'general/getProviders'));
-        if (count($lstProviders->lista) > 0) {
+        //$lstProviders = json_decode(file_get_contents($this->urlBase .'general/getProviders'));
+        $lstProviders = Http::post($this->urlBase .'general/getProviders')->body();
+        $lstProviders = json_decode($lstProviders);
+        if ($lstProviders->total_registros > 0) {
             foreach ($lstProviders->lista as $l => $lista) {
                 print_r("fila proveedores : ".$l."\n" );
-                if ($lista->idproveedor != "010328") { // arreglar razon social
+                //if ($lista->idproveedor != "010328") { // arreglar razon social
                     //$this->searchImporter($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false); CLIENTES
                     $this->searchProvider($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false);
-                }
+                //}
             }
         }
+
+        //actualizamos los registros que no se pudieron encontrar
+        print_r(":::::::::::::: ACTUALIZAMOS LOS REGISTROS NO ENCONTRADOS::::::::::::\n" );
+        DB::table('extraction_subida')->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('statusProvider', 'CHARGED')
+                                    ->update(array('statusProvider' => 'NOT_FOUND'));
     }
 
     function processMissingCountry(){
@@ -196,7 +243,7 @@ class ExtractionDataSearch implements ShouldQueue
     }
 
     function searchBrandByName($extractionHeader,$brand_code,$brand_name_ini,$brand_to_search,$is_partial=false){
-        if (strlen(trim($brand_to_search))> 0) {
+        if (strlen(trim($brand_to_search))> 1) {
             $listFounded = DB::table('extraction_subida')
                                     ->selectRaw('
                                     id,
@@ -224,6 +271,8 @@ class ExtractionDataSearch implements ShouldQueue
                                     ')
                                     ->where('extractionHeaderId', $extractionHeader)
                                     ->whereIn('status',['CHARGED','PARTIAL_FOUND'])
+                                    ->where('isActive',1)
+                                    ->where('isDeleted',0)
                                     ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($brand_to_search)).'%"')
                                     ->get();
             if(count($listFounded)>0){
@@ -285,6 +334,7 @@ class ExtractionDataSearch implements ShouldQueue
             $lstArticleBrand = json_decode(file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand));
             if (count($lstArticleBrand->data)>0) {
                 foreach ($lstArticleBrand->data as $d => $brand) {
+                    print_r("fila articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
                     //buscamos el articulo tal cual
                     $this->searchArticleByCodeBrand($codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
                     //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
@@ -356,7 +406,6 @@ class ExtractionDataSearch implements ShouldQueue
     function searchArticleByCodeBrand($brand_code,$article_ini,$article_to_search,$is_partial){
         $article_to_search = str_replace('"', '', $article_to_search);
         if (strlen(trim($article_to_search))> 3) {
-            print_r("busqueda Articulo: ".$article_to_search."\n" );
             $listFounded = DB::table('extraction_subida')
                                     ->selectRaw('
                                     id,
@@ -430,11 +479,11 @@ class ExtractionDataSearch implements ShouldQueue
 
                 if ($status_founded) {
                     if ($is_partial) {
-                        //print_r("partials brand: ".$brand_to_search."\n" );
-                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
+                        print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO PARCIAL:".$article_ini."\n" );
+                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
                     }else{
-                        //print_r("FOUNDED: ".$brand_to_search."\n" );
-                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-success'));
+                        print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO COMPLETO:".$article_ini."\n" );
+                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'FOUNDED','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-success'));
                     }
                 }
             }
@@ -528,6 +577,7 @@ class ExtractionDataSearch implements ShouldQueue
     }
 
     function searchProvider($codigo,$provider_ini,$provider_to_search,$is_partial){
+        $provider_to_search = str_replace('"', '', $provider_to_search);
         if (strlen(trim($provider_to_search))> 0) {
             $listFounded = DB::table('extraction_subida')
                                     ->selectRaw('
@@ -559,7 +609,7 @@ class ExtractionDataSearch implements ShouldQueue
                                     ->whereRaw('UPPER(TRIM(embarcadorExportador)) like "%'.strtoupper(trim($provider_to_search)).'%"')
                                     ->get();
             if(count($listFounded)>0){
-                print_r("providerInicial: ".$provider_ini." providerSearch: ".$provider_to_search."\n" );
+                print_r("CODIGO: ".$codigo." providerInicial: ".$provider_ini." providerSearch: ".$provider_to_search."\n" );
                 $this->validateProviderFounded($codigo,$listFounded,$provider_ini,$provider_to_search,$is_partial);
                 return true;
             }

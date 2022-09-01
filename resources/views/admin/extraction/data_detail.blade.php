@@ -26,6 +26,7 @@
                         <table class="display table table-striped table-hover" id="tableDetail" style="width:100%">
                             <thead>
                                 <tr>
+{{--
                                     <th>ID</th>
                                     <th>DUA</th>
                                     <th>FECHA</th>
@@ -52,77 +53,36 @@
                                     <th>COD MARCA</th>
                                     <th>NOMBRE MARCA</th>
                                     <th>CÓDIGO</th>
-                                    <th>ESTADO CARGA</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @if (!is_null($lstDetalle))
-                                @foreach($lstDetalle as $detalle)
-                                    <tr>
-                                        <td>{{ $detalle->id }}</td>
-                                        <td>{{ $detalle->dua }}</td>
-                                        <td>{{ $detalle->fecha }}</td>
-                                        <td>{{ $detalle->eta }}</td>
-                                        <td>{{ $detalle->importador }}</td>
-                                        <td>{{ $detalle->embarcadorExportador }}</td>
-                                        <td>{{ $detalle->pesoBruto }}</td>
-                                        <td>{{ $detalle->pesoNeto }}</td>
-                                        <td>{{ $detalle->qty1 }}</td>
-                                        <td>{{ $detalle->und1 }}</td>
-                                        <td>{{ $detalle->qty2 }}</td>
-                                        <td>{{ $detalle->und2 }}</td>
-                                        <td>{{ $detalle->fobTotal }}</td>
-                                        <td>{{ $detalle->fobUnd1 }}</td>
-                                        <td>{{ $detalle->fobUnd2 }}</td>
-                                        <td>{{ $detalle->codPaisOrigen }}</td>
-                                        <td>{{ $detalle->paisOrigen }}</td>
-                                        <td>{{ $detalle->codPaisCompra }}</td>
-                                        <td>{{ $detalle->paisCompra }}</td>
-                                        <td>{{ $detalle->puertoEmbarque }}</td>
-                                        <td>{{ $detalle->agenteAduanero }}</td>
-                                        <td>{{ $detalle->estado }}</td>
-                                        <td>{{ $detalle->descripcionComercial }}</td>
-                                        <td>{{ $detalle->marca }}</td>
-                                        <td>{{ $detalle->nameMarca }}</td>
-                                        <td>{{ $detalle->codigo }}</td>
-                                        <td>
-                                            <span class="{{$detalle->typeFoundColor}}">{{$detalle->status}}</span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                            </tbody>
-                            {{-- <tfoot>
-                                <tr>
+                                    <th>ESTADO CARGA</th> --}}
+
+                                    <th>ID</th>
                                     <th>DUA</th>
                                     <th>FECHA</th>
-                                    <th>ETA</th>
+                                    <th>ESTADO IMPORTADOR</th>
+                                    <th>COD IMPORTADOR</th>
                                     <th>IMPORTADOR</th>
-                                    <th>EMBARCADOR / EXPORTADOR</th>
-                                    <th>PESO BRUTO</th>
-                                    <th>PESO NETO</th>
-                                    <th>QTY1</th>
-                                    <th>UNID1</th>
+                                    <th>ESTADO PROVEEDOR</th>
+                                    <th>CODPROVEEDOR</th>
+                                    <th>PROVEEDOR</th>
                                     <th>QTY2</th>
-                                    <th>UNID2</th>
+                                    <th>UND2</th>
                                     <th>FOB TOTAL</th>
-                                    <th>FOB UND 1</th>
                                     <th>FOB UND 2</th>
                                     <th>COD PAIS ORIGEN</th>
                                     <th>PAIS ORIGEN</th>
                                     <th>COD PAIS COMPRA</th>
                                     <th>PAIS COMPRA</th>
                                     <th>PUERTO EMBARQUE</th>
-                                    <th>AGENTE ADUANERO</th>
-                                    <th>ESTADO</th>
                                     <th>DESCRIPCION COMERCIAL</th>
+                                    <th>ESTADO ARTICULO</th>
+                                    <th>CODFABRICACION</th>
+                                    <th>ESTADO MARCA</th>
                                     <th>COD MARCA</th>
                                     <th>NOMBRE MARCA</th>
-                                    <th>CÓDIGO</th>
-                                    <th>ESTADO CARGA</th>
-                                    <th>#</th>
                                 </tr>
-                            </tfoot> --}}
+                            </thead>
+                            <tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -158,14 +118,20 @@
             var column = 0;
             $('#tableDetail thead th').each( function () {
                 column++;
+                console.log('filaHeader' + column);
                 var title = $(this).text();
                 var html = '<div class="row">';
                     html += '<div class="col-12">' + title +'</div>';
                     html += '<div class="col-12"><input type="text" placeholder="Search ' + title + '" /></div>';
                     html += '</div>';
-                if (column < 27) {
-                    $(this).html(html);
-                }
+                $(this).html(html);
+                // if (column == 24) { //ultima fila
+                //     var html2 = '<div class="row">';
+                //     html2 += '<div class="col-12">ACCIONES</div>';
+                //     html2 += '</div>';
+                //     $(this).html(html2);
+
+                // }
             } );
             var table = $('#tableDetail').DataTable({
                             "pageLength": 100,
@@ -191,49 +157,268 @@
                             },
                             'order': [],
                             columns: [
-                                { data: 'id', name: 'id',searchable: true },
-                                { data: 'dua', name: 'dua',searchable: true },
-                                { data: 'fecha', name: 'fecha',searchable: true },
-                                { data: 'eta', name: 'eta',searchable: true },
-                                { data: 'importador', name: 'importador',searchable: true },
-                                { data: 'embarcadorExportador', name: 'embarcadorExportador',searchable: true },
-                                { data: 'pesoBruto', name: 'pesoBruto',searchable: true },
-                                { data: 'pesoNeto', name: 'pesoNeto',searchable: true },
-                                { data: 'qty1', name: 'qty1',searchable: true },
-                                { data: 'und2', name: 'und2',searchable: true },
-                                { data: 'qty2', name: 'qty2',searchable: true },
-                                { data: 'und2', name: 'und2',searchable: true },
-                                { data: 'fobTotal', name: 'fobTotal',searchable: true },
-                                { data: 'fobUnd1', name: 'fobUnd1',searchable: true },
-                                { data: 'fobUnd2', name: 'fobUnd2',searchable: true },
-                                { data: 'codPaisOrigen', name: 'codPaisOrigen',searchable: true },
-                                { data: 'paisOrigen', name: 'paisOrigen',searchable: true },
-                                { data: 'codPaisCompra', name: 'codPaisCompra',searchable: true },
-                                { data: 'paisCompra', name: 'paisCompra',searchable: true },
-                                { data: 'puertoEmbarque', name: 'puertoEmbarque',searchable: true },
-                                { data: 'agenteAduanero', name: 'agenteAduanero',searchable: true },
-                                { data: 'estado', name: 'estado',searchable: true },
-                                { data: 'descripcionComercial', name: 'descripcionComercial',searchable: true },
-                                { data: 'marca', name: 'marca',searchable: true },
-                                { data: 'nameMarca', name: 'nameMarca',searchable: true },
-                                { data: 'codigo', name: 'codigo',searchable: true },
-                                { data: 'status', name: 'status',searchable: true }
-                            ],
-                            /*
+                                // { data: 'id', name: 'id',searchable: true },
+                                // { data: 'dua', name: 'dua',searchable: true },
+                                // { data: 'fecha', name: 'fecha',searchable: true },
+                                // { data: 'eta', name: 'eta',searchable: true },
+                                // { data: 'importador', name: 'importador',searchable: true },
+                                // { data: 'embarcadorExportador', name: 'embarcadorExportador',searchable: true },
+                                // { data: 'pesoBruto', name: 'pesoBruto',searchable: true },
+                                // { data: 'pesoNeto', name: 'pesoNeto',searchable: true },
+                                // { data: 'qty1', name: 'qty1',searchable: true },
+                                // { data: 'und2', name: 'und2',searchable: true },
+                                // { data: 'qty2', name: 'qty2',searchable: true },
+                                // { data: 'und2', name: 'und2',searchable: true },
+                                // { data: 'fobTotal', name: 'fobTotal',searchable: true },
+                                // { data: 'fobUnd1', name: 'fobUnd1',searchable: true },
+                                // { data: 'fobUnd2', name: 'fobUnd2',searchable: true },
+                                // { data: 'codPaisOrigen', name: 'codPaisOrigen',searchable: true },
+                                // { data: 'paisOrigen', name: 'paisOrigen',searchable: true },
+                                // { data: 'codPaisCompra', name: 'codPaisCompra',searchable: true },
+                                // { data: 'paisCompra', name: 'paisCompra',searchable: true },
+                                // { data: 'puertoEmbarque', name: 'puertoEmbarque',searchable: true },
+                                // { data: 'agenteAduanero', name: 'agenteAduanero',searchable: true },
+                                // { data: 'estado', name: 'estado',searchable: true },
+                                // { data: 'descripcionComercial', name: 'descripcionComercial',searchable: true },
+                                // { data: 'marca', name: 'marca',searchable: true },
+                                // { data: 'nameMarca', name: 'nameMarca',searchable: true },
+                                // { data: 'codigo', name: 'codigo',searchable: true },
+                                // { data: 'status', name: 'status',searchable: true }
+
+                                { data: 'id', name: 'id',searchable: true, orderable: false },
+                                { data: 'dua', name: 'dua',searchable: true, orderable: false },
+                                { data: 'fecha', name: 'fecha',searchable: true, orderable: false },
+                                { data: 'statusImporter', name: 'statusImporter',searchable: true, orderable: false,
+
+                                    createdCell: function (td, cellData, rowData, row, col) {
+                                        switch (rowData.statusImporter) {
+                                            case 'FOUNDED':
+                                                $(td).css('color', '#28a745');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-success');
+                                                //$(td).css('margin', 'auto');
+                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                break;
+                                            case 'NOT_FOUND':
+                                                $(td).css('color', '#ec0404');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
+                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'red');
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                $(td).css('color', '#e7af3f');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
+                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'green');
+                                                break;
+                                            default:
+                                                $(td).css('color', '#49a9df');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
+                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'light-blue');
+                                                break;
+                                        }
+                                    }
+
+                                    /*
+                                    render: function ( data, type, row ) {
+                                        console.log(data);
+                                        console.log(type);
+                                        console.log(row);
+                                        let html = "";
+                                        switch (row.statusImporter) {
+                                            case 'FOUNDED':
+                                                html = "<span class='badge bg-success'>"+data+"</span>";
+                                                break;
+                                            case 'NOT FOUND':
+                                                html = "<span class='badge bg-danger'>"+data+"</span>";
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                html = "<span class='badge bg-warning'>"+data+"</span>";
+                                                break;
+                                            default:
+                                                html = "<span class='badge bg-primary'>"+data+"</span>";
+                                                break;
+                                        }
+                                        return html;
+                                    }
+                                    */
+
+                                },
+                                { data: 'codImporter', name: 'codImporter',searchable: true , orderable: false},
+                                { data: 'importador', name: 'importador',searchable: true, orderable: false },
+                                { data: 'statusProvider', name: 'statusProvider',searchable: true, orderable: false,
+                                    createdCell: function (td, cellData, rowData, row, col) {
+                                        switch (rowData.statusProvider) {
+                                            case 'FOUNDED':
+                                                $(td).css('color', '#28a745');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-success');
+                                                //$(td).css('margin', 'auto');
+                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                break;
+                                            case 'NOT_FOUND':
+                                                $(td).css('color', '#ec0404');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
+                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'red');
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                $(td).css('color', '#e7af3f');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
+                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'green');
+                                                break;
+                                            default:
+                                                $(td).css('color', '#49a9df');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
+                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'light-blue');
+                                                break;
+                                        }
+                                    }
+                                },
+                                { data: 'codProvider', name: 'codProvider',searchable: true , orderable: false},
+                                { data: 'embarcadorExportador', name: 'embarcadorExportador',searchable: true , orderable: false },
+                                { data: 'qty2', name: 'qty2',searchable: true, orderable: false },
+                                { data: 'und2', name: 'und2',searchable: true, orderable: false },
+                                { data: 'fobTotal', name: 'fobTotal',searchable: true, orderable: false },
+                                { data: 'fobUnd2', name: 'fobUnd2',searchable: true, orderable: false },
+                                { data: 'codPaisOrigen', name: 'codPaisOrigen',searchable: true, orderable: false },
+                                { data: 'paisOrigen', name: 'paisOrigen',searchable: true, orderable: false },
+                                { data: 'codPaisCompra', name: 'codPaisCompra',searchable: true, orderable: false },
+                                { data: 'paisCompra', name: 'paisCompra',searchable: true, orderable: false },
+                                { data: 'puertoEmbarque', name: 'puertoEmbarque',searchable: true, orderable: false },
+                                { data: 'descripcionComercial', name: 'descripcionComercial',searchable: true, orderable: false },
+                                { data: 'statusArticle', name: 'statusArticle',searchable: true, orderable: false,
+                                    createdCell: function (td, cellData, rowData, row, col) {
+                                        switch (rowData.statusArticle) {
+                                            case 'FOUNDED':
+                                                $(td).css('color', '#28a745');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-success');
+                                                //$(td).css('margin', 'auto');
+                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                break;
+                                            case 'NOT_FOUND':
+                                                $(td).css('color', '#ec0404');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
+                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'red');
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                $(td).css('color', '#e7af3f');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
+                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'green');
+                                                break;
+                                            default:
+                                                $(td).css('color', '#49a9df');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
+                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'light-blue');
+                                                break;
+                                        }
+                                    }
+                                },
+                                { data: 'codigo', name: 'codigo',searchable: true, orderable: false },
+                                { data: 'status', name: 'status',searchable: true, orderable: false,
+                                    createdCell: function (td, cellData, rowData, row, col) {
+                                        switch (rowData.status) {
+                                            case 'FOUNDED':
+                                                $(td).css('color', '#28a745');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-success');
+                                                //$(td).css('margin', 'auto');
+                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                break;
+                                            case 'NOT_FOUND':
+                                                $(td).css('color', '#ec0404');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
+                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'red');
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                $(td).css('color', '#e7af3f');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
+                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'green');
+                                                break;
+                                            default:
+                                                $(td).css('color', '#49a9df');
+                                                $(td).css('font-weight', 'bold');
+                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
+                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'light-blue');
+                                                break;
+                                        }
+                                    }
+                                },
+                                { data: 'marca', name: 'marca',searchable: true, orderable: false },
+                                { data: 'nameMarca', name: 'nameMarca',searchable: true, orderable: false }
+                            ],/*
                             "columnDefs":[
                                 {
-                                    "targets":26,
+                                    "targets":3,
                                     "sortable":false,
                                     "render": function(data,type,full,meta){
-                                        return "<center>"+
-                                                "<button type='button' class='btn btn-primary btn-sm btnEditar' onclick='editRow("+full.id+")'>"+
-                                                "<i class='fas fa-pencil-alt'></i>"+
-                                                "</button>"+
-                                                "</center>";
+                                        console.log(data);
+                                        console.log(type);
+                                        console.log(full);
+                                        console.log(meta);
+                                        let htmlImporter = "";
+                                        switch (full.statusImporter) {
+                                            case 'FOUNDED':
+                                                htmlImporter = "<span class='badge bg-success'>"+full.statusImporter+"</span>";
+                                                break;
+                                            case 'NOT FOUND':
+                                                htmlImporter = "<span class='badge bg-danger'>"+full.statusImporter+"</span>";
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                htmlImporter = "<span class='badge bg-warning'>"+full.statusImporter+"</span>";
+                                                break;
+                                            default:
+                                                htmlImporter = "<span class='badge bg-primary'>"+full.statusImporter+"</span>";
+                                                break;
+                                        }
+                                        return htmlImporter;
                                     }
-                                }
-                            ],
-                            */
+                                },
+                                {
+                                    "targets":5,
+                                    "sortable":false,
+                                    "render": function(data,type,full,meta){
+                                        let htmlProvider = "";
+                                        switch (full.statusProvider) {
+                                            case 'FOUNDED':
+                                                htmlProvider = "<span class='badge bg-success'>"+full.statusProvider+"</span>";
+                                                break;
+                                            case 'NOT FOUND':
+                                                htmlProvider = "<span class='badge bg-danger'>"+full.statusProvider+"</span>";
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                htmlProvider = "<span class='badge bg-warning'>"+full.statusProvider+"</span>";
+                                                break;
+                                            default:
+                                                htmlProvider = "<span class='badge bg-primary'>"+full.statusProvider+"</span>";
+                                                break;
+                                        }
+                                        return htmlProvider;
+                                    }
+                                },
+
+                            ],*/
                             "select": {
                                 style:    'os',
                                 selector: 'td:first-child'
@@ -275,32 +460,56 @@
                 columns:{
                     identifier : [0, 'id'],
                     editable:[
+                        // [1,  'dua'],
+                        // [2,  'fecha'],
+                        // [3,  'eta'],
+                        // [4,  'importador'],
+                        // [5,  'embarcadorExportador'],
+                        // [6,  'pesoBruto'],
+                        // [7,  'pesoNeto'],
+                        // [8,  'qty1'],
+                        // [9,  'und2'],
+                        // [10, 'qty2'],
+                        // [11, 'und2'],
+                        // [12, 'fobTotal'],
+                        // [13, 'fobUnd1'],
+                        // [14, 'fobUnd2'],
+                        // [15, 'codPaisOrigen'],
+                        // [16, 'paisOrigen'],
+                        // [17, 'codPaisCompra'],
+                        // [18, 'paisCompra'],
+                        // [19, 'puertoEmbarque'],
+                        // [20, 'agenteAduanero'],
+                        // [21, 'estado'],
+                        // [22, 'descripcionComercial'],
+                        // [23, 'marca'],
+                        // [24, 'nameMarca'],
+                        // [25, 'codigo'],
+                        // [26, 'status']
+
                         [1,  'dua'],
                         [2,  'fecha'],
-                        [3,  'eta'],
-                        [4,  'importador'],
-                        [5,  'embarcadorExportador'],
-                        [6,  'pesoBruto'],
-                        [7,  'pesoNeto'],
-                        [8,  'qty1'],
-                        [9,  'und2'],
-                        [10, 'qty2'],
-                        [11, 'und2'],
-                        [12, 'fobTotal'],
-                        [13, 'fobUnd1'],
-                        [14, 'fobUnd2'],
-                        [15, 'codPaisOrigen'],
-                        [16, 'paisOrigen'],
-                        [17, 'codPaisCompra'],
-                        [18, 'paisCompra'],
-                        [19, 'puertoEmbarque'],
-                        [20, 'agenteAduanero'],
-                        [21, 'estado'],
-                        [22, 'descripcionComercial'],
-                        [23, 'marca'],
-                        [24, 'nameMarca'],
-                        [25, 'codigo'],
-                        [26, 'status']
+                        [3,  'statusImporter'],
+                        [4,  'codImporter'],
+                        [5,  'importador'],
+                        [6,  'statusProvider'],
+                        [7,  'codProvider'],
+                        [8,  'embarcadorExportador'],
+                        [9,  'qty2'],
+                        [10,  'und2'],
+                        [11, 'fobTotal'],
+                        [12, 'fobUnd2'],
+                        [13, 'codPaisOrigen'],
+                        [14, 'paisOrigen'],
+                        [15, 'codPaisCompra'],
+                        [16, 'paisCompra'],
+                        [17, 'puertoEmbarque'],
+                        [18, 'descripcionComercial'],
+                        [19, 'statusArticle'],
+                        [20, 'codigo'],
+                        [21, 'status'],
+                        [22, 'marca'],
+                        [23, 'nameMarca']
                     ]
                 },
                 buttons: {
@@ -337,10 +546,6 @@
 
                 });
             });
-        }
-
-        function editRow(id){
-            console.log(data);
         }
     </script>
 @stop

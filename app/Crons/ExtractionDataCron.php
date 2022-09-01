@@ -1,17 +1,13 @@
 <?php
 
 namespace App\Crons;
-$vendorDir = dirname(dirname(__FILE__));
-$baseDir = dirname($vendorDir);
-global $argc, $argv;
-use App\Http\Controllers\Admin\ExtractionController;
-use app\Models\Admin\ExtractionHeaderModel;
-use app\Models\Admin\ExtractionModel;
-use app\Models\Admin\ExtractionReportModel;
+require_once "../../vendor/autoload.php";
 //use App\Models\Admin\ExtractionHeaderModel;
 // use App\Imports\ExtractionImport;
 // use App\Exports\ExtractionReportExport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class ExtractionDataCron
 {
@@ -24,9 +20,10 @@ class ExtractionDataCron
         print_r("::::::::::::: regularizar_campos_faltantes  :::::::::::\n" );
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
         print_r("idHeader :". $idHeader . "\n" );
-        var_dump(\App\Http\Controllers\Admin\ExtractionController::test());
         //var_dump($model);
-        //$objHeader = ExtractionHeaderModel::find($idHeader);
+        $totalRegistros = DB::table("extraction_subida")->where('extractionHeaderId', $idHeader)->count();
+        var_dump($totalRegistros);
+
         /*
         if (is_object($objHeader)) {
             //obtenemos el detalle de los registros subidos

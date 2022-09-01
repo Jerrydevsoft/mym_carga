@@ -25,13 +25,20 @@
     },
     "autoload": {
         "psr-4": {
+            "classmap": [
+                "database",
+                "app/Crons/ExtractionDataCron.php"
+            ],
             "App\\": "app/",
             "App\\Crons\\" : [
                 "app/crons/"
             ],
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Crons/ExtractionDataCron.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
