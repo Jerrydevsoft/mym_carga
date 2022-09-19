@@ -257,6 +257,7 @@ return [
         ],
         */
         //['header' => 'account_settings'],
+        /*
         [
             'text'    => 'carga_informacion',
             'icon'    => 'fas fa-fw fa-share',
@@ -270,7 +271,7 @@ return [
                     'url'     => 'admin/extraccion/import/subidas'
                 ],
             ],
-        ],
+        ],*/
         /*
         ['header' => 'labels'],
         [

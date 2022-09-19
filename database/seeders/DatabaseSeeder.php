@@ -16,3 +16,14 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
     }
 }
+
+class UserTableSeeder extends Seeder {
+
+    public function run()
+    {
+        //DB::table('users')->delete();
+
+        User::create(['email' => 'marcosoft@gmail.com']);
+    }
+
+}

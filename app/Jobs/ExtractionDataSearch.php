@@ -56,6 +56,8 @@ class ExtractionDataSearch implements ShouldQueue
             $this->processMissingProvider();
             $this->processMissingCustomer();//importadores
             $this->processMissingCountry();
+            DB::table('extraction_header')->where('id', $this->extractionHeader->id)->update(array('status' => 'COMPLETE'));
+            // $this->processArticleNotFound();
         }
 
         //$lstProviders = DB::table("extraction_subida")->selectRaw('DISTINCT(marca) as codMarca')->where('extractionHeaderId', $this->extractionHeader->id)->get();
@@ -77,41 +79,43 @@ class ExtractionDataSearch implements ShouldQueue
             // :: procedemos una busqueda por la marca completa
             foreach ($lstBrand as $d => $brand) {
                 print_r("fila marca : ".$d."\n" );
-                $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$brand->name,false);
-                //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
-                $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_1));
-                $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true);
+                $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$brand->name,false,$brand->typeSearchBrand);
                 if (!$result) {
-                    $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_1, strlen(trim($brand->name))));
-                    $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true);
-                }
-                //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
-                $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_2));
-                $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true);
-                if (!$result) {
-                    $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_2, strlen(trim($brand->name))));
-                    $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true);
-                }
-                //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
-                $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_3));
-                $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true);
-                if (!$result) {
-                    $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_3, strlen(trim($brand->name))));
-                    $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true);
-                }
-                //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
-                $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_4));
-                $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true);
-                if (!$result) {
-                    $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_4, strlen(trim($brand->name))));
-                    $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true);
-                }
-                //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
-                $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_5));
-                $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true);
-                if (!$result) {
-                    $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_5, strlen(trim($brand->name))));
-                    $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true);
+                    //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
+                    $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_1));
+                    $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true,$brand->typeSearchBrand);
+                    if (!$result) {
+                        $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_1, strlen(trim($brand->name))));
+                        $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true,$brand->typeSearchBrand);
+                    }
+                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
+                    $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_2));
+                    $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true,$brand->typeSearchBrand);
+                    if (!$result) {
+                        $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_2, strlen(trim($brand->name))));
+                        $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true,$brand->typeSearchBrand);
+                    }
+                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
+                    $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_3));
+                    $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true,$brand->typeSearchBrand);
+                    if (!$result) {
+                        $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_3, strlen(trim($brand->name))));
+                        $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true,$brand->typeSearchBrand);
+                    }
+                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
+                    $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_4));
+                    $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true,$brand->typeSearchBrand);
+                    if (!$result) {
+                        $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_4, strlen(trim($brand->name))));
+                        $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true,$brand->typeSearchBrand);
+                    }
+                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
+                    $txtPartialIni = substr($brand->name, 0, strpos(trim($brand->name), $this->caracter_5));
+                    $result = $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialIni,true,$brand->typeSearchBrand);
+                    if (!$result) {
+                        $txtPartialFinal = substr($brand->name, strpos(trim($brand->name), $this->caracter_5, strlen(trim($brand->name))));
+                        $this->searchBrandByName($this->extractionHeader->id,$brand->code,$brand->name,$txtPartialFinal,true,$brand->typeSearchBrand);
+                    }
                 }
             }
             //actualizamos los registros que no se pudieron encontrar
@@ -123,7 +127,7 @@ class ExtractionDataSearch implements ShouldQueue
             $totalFounded = DB::table("extraction_subida")->where('extractionHeaderId', $this->extractionHeader->id)->where('status','FOUNDED')->count();
             $totalPartialFound = DB::table("extraction_subida")->where('extractionHeaderId', $this->extractionHeader->id)->where('status','PARTIAL_FOUND')->count();
             $totalNotFound = DB::table("extraction_subida")->where('extractionHeaderId', $this->extractionHeader->id)->where('status','NOT_FOUND')->count();
-            DB::table('extraction_header')->where('id', $this->extractionHeader->id)->update(array('status' => 'COMPLETE','totalFound' => $totalFounded,'totalPartialFound' => $totalPartialFound,'totalMissing' => $totalNotFound));
+            DB::table('extraction_header')->where('id', $this->extractionHeader->id)->update(array('totalFound' => $totalFounded,'totalPartialFound' => $totalPartialFound,'totalMissing' => $totalNotFound));
         }
     }
 
@@ -132,10 +136,12 @@ class ExtractionDataSearch implements ShouldQueue
         print_r(":::::::::: regularizamos_articulos_por_marca ::::::::::\n" );
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
         $lstBrandFounded = DB::table("extraction_subida")->selectRaw('DISTINCT(marca) as codMarca')->where('extractionHeaderId', $this->extractionHeader->id)->get();
+        print_r("::::::::::::: TOTAL DE MARCAS : ".count($lstBrandFounded)." :::::::::::::::::"."\n" );
         if (count($lstBrandFounded)>0) {
             foreach ($lstBrandFounded as $b => $brand) {
                 //print_r("fila articulo: ".$b." - Marca: ".$brand->codMarca."\n" );
                 //if ($brand->codMarca != '001') {
+                print_r("::::::::::::: fila marca : ".$b."- MARCA:". $brand->codMarca." :::::::::::::::::"."\n" );
                 $this->searchArticle($brand->codMarca);
                 //}
             }
@@ -242,16 +248,36 @@ class ExtractionDataSearch implements ShouldQueue
         }
     }
 
-    function searchBrandByName($extractionHeader,$brand_code,$brand_name_ini,$brand_to_search,$is_partial=false){
+    function processArticleNotFound(){
+        print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+        print_r("::::::::::::: regularizamos_articulos_no_econtrador :::\n" );
+        print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+        $lstBrandFounded = DB::table("extraction_subida")->selectRaw('marca as codMarca,nameMarca')
+                            ->where('extractionHeaderId', $this->extractionHeader->id)
+                            ->groupBy('marca')
+                            ->groupBy('nameMarca')->get();
+        print_r("::::::::::::: TOTAL DE MARCAS : ".count($lstBrandFounded)." :::::::::::::::::"."\n" );
+        if (count($lstBrandFounded)>0) {
+            foreach ($lstBrandFounded as $b => $brand) {
+                //print_r("fila articulo: ".$b." - Marca: ".$brand->codMarca."\n" );
+                //if ($brand->codMarca != '001') {
+                print_r("::::::::::::: fila marca : ".$b."- MARCA:". $brand->codMarca." :::::::::::::::::"."\n" );
+                $this->searchArticleNotFound($brand->codMarca,$brand->nameMarca);
+                //}
+            }
+        }
+
+        //actualizamos los registros que no se pudieron encontrar
+    }
+
+    function searchBrandByName($extractionHeader,$brand_code,$brand_name_ini,$brand_to_search,$is_partial=false,$brand_to_typeSearchBrand){
         if (strlen(trim($brand_to_search))> 1) {
             $listFounded = DB::table('extraction_subida')
                                     ->selectRaw('
                                     id,
                                     UPPER(descripcionComercial),
                                     substring(UPPER(descripcionComercial),LOCATE("'.$brand_to_search.'",descripcionComercial)-1,1) AS CARACTER_ANTERIOR,
-                                    "'.$brand_to_search.'" AS BRAND_TO_SEARCH,
-                                    LOCATE("'.$brand_to_search.'",UPPER(descripcionComercial)) as POSICION,
-                                    (LOCATE("'.$brand_to_search.'", UPPER(descripcionComercial)) + LENGTH("'.$brand_to_search.'") - 1) as FINAL_WORD,
+                                    (LOCATE("'.$brand_to_search.'", UPPER(descripcionComercial)) + CHAR_LENGTH("'.$brand_to_search.'") - 1) as FINAL_WORD,
                                     LENGTH(descripcionComercial) as total_cadena,
                                     IF((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$brand_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
                                     substring(UPPER(descripcionComercial),LOCATE("'.$brand_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$brand_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$brand_to_search.'",UPPER(descripcionComercial)))),
@@ -276,8 +302,7 @@ class ExtractionDataSearch implements ShouldQueue
                                     ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($brand_to_search)).'%"')
                                     ->get();
             if(count($listFounded)>0){
-                $this->validateBrandFounded($listFounded,$brand_code,$brand_name_ini,$brand_to_search,$is_partial);
-                return true;
+                return $this->validateBrandFounded($listFounded,$brand_code,$brand_name_ini,$brand_to_search,$is_partial,$brand_to_typeSearchBrand);
             }else{
                 return false;
             }
@@ -286,25 +311,26 @@ class ExtractionDataSearch implements ShouldQueue
         }
     }
 
-    function validateBrandFounded($listFounded,$brand_code,$brand_name_ini,$brand_to_search,$is_partial){
+    function validateBrandFounded($listFounded,$brand_code,$brand_name_ini,$brand_to_search,$is_partial,$brand_to_typeSearchBrand){
         $status_founded=false;
+        $result = false;
         foreach ($listFounded as $lst => $found) {
             //print_r("caracter anterior: ".$found->CARACTER_ANTERIOR." - validacion:  ".ctype_alpha($found->CARACTER_ANTERIOR)."\n" );
             if(!ctype_alpha($found->CARACTER_ANTERIOR)){
                 switch($brand_to_search){
-                    case (strtoupper(trim($found->FINAL_ESPACIO)) == $brand_to_search):
+                    case (strtoupper(trim($found->FINAL_ESPACIO))):
                         $status_founded=true;
                         break;
-                    case (strtoupper(trim($found->FINAL_COMA)) == $brand_to_search):
+                    case (strtoupper(trim($found->FINAL_COMA))):
                         $status_founded=true;
                         break;
-                    case (strtoupper(trim($found->FINAL_GUION)) == $brand_to_search):
+                    case (strtoupper(trim($found->FINAL_GUION))):
                         $status_founded=true;
                         break;
-                    case (strtoupper(trim($found->FINAL_PARENTESIS)) == $brand_to_search):
+                    case (strtoupper(trim($found->FINAL_PARENTESIS))):
                         $status_founded=true;
                         break;
-                    case (strtoupper(trim($found->FINAL_CORCHETES)) == $brand_to_search):
+                    case (strtoupper(trim($found->FINAL_CORCHETES))):
                         $status_founded=true;
                         break;
                     default:
@@ -320,13 +346,49 @@ class ExtractionDataSearch implements ShouldQueue
                     if ($is_partial) {
                         //print_r("partials brand: ".$brand_to_search."\n" );
                         DB::table('extraction_subida')->where('id', $found->id)->update(array('status' => 'PARTIAL_FOUND', 'marca' => $brand_code, 'nameMarca' => $brand_name_ini, 'typeFoundColor' => 'badge bg-warning'));
+                        $result = false;
                     }else{
                         //print_r("FOUNDED: ".$brand_to_search."\n" );
                         DB::table('extraction_subida')->where('id', $found->id)->update(array('status' => 'FOUNDED', 'marca' => $brand_code, 'nameMarca' => $brand_name_ini, 'typeFoundColor' => 'badge bg-success'));
+                        $result = true;
                     }
-                }
+                }/*else{
+                    if (!$is_partial) {
+                        switch($brand_to_typeSearchBrand){
+                            case (strtoupper(trim($found->FINAL_ESPACIO))):
+                                $status_founded=true;
+                                break;
+                            case (strtoupper(trim($found->FINAL_COMA))):
+                                $status_founded=true;
+                                break;
+                            case (strtoupper(trim($found->FINAL_GUION))):
+                                $status_founded=true;
+                                break;
+                            case (strtoupper(trim($found->FINAL_PARENTESIS))):
+                                $status_founded=true;
+                                break;
+                            case (strtoupper(trim($found->FINAL_CORCHETES))):
+                                $status_founded=true;
+                                break;
+                            default:
+                                if ($found->FINAL_WORD == $found->total_cadena) {
+                                    $status_founded = true;
+                                }else{
+                                    $status_founded = false;
+                                }
+                                break;
+                        }
+
+                        if ($status_founded) {
+                            //print_r("SEGUNDA BUSQUEDA ENCONTRADA: ".$brand_to_search."\n" );
+                            DB::table('extraction_subida')->where('id', $found->id)->update(array('status' => 'FOUNDED', 'marca' => $brand_code, 'nameMarca' => $brand_name_ini, 'typeFoundColor' => 'badge bg-success'));
+                            $result = true;
+                        }
+                    }
+                }*/
             }
         }
+        return $result;
     }
 
     function searchArticle($codeBrand){
@@ -334,67 +396,70 @@ class ExtractionDataSearch implements ShouldQueue
             $lstArticleBrand = json_decode(file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand));
             if (count($lstArticleBrand->data)>0) {
                 foreach ($lstArticleBrand->data as $d => $brand) {
-                    print_r("fila articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                    if (count($lstArticleBrand->data) == ($d + 1) ) {
+                        print_r("TOTAL DE ARTICULOS: ".$d." -> ARTICULO : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                    }
+                    //print_r("fila articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
                     //buscamos el articulo tal cual
-                    $this->searchArticleByCodeBrand($codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
-                    //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
-                    $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_1));
-                    if (strlen(trim($txtPartialIni))>3) {
-                        $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                        if (!$result) {
-                            $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_1, strlen(trim($brand->factory_code))));
-                            if (strlen(trim($txtPartialFinal))>3) {
-                                $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                    $result = $this->searchArticleByCodeBrand($codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
+                    if (!$result) {
+                        //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_1));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_1, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
                             }
                         }
-                    }
 
-                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
-                    $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_2));
-                    if (strlen(trim($txtPartialIni))>3) {
-                        $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                        if (!$result) {
-                            $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_2, strlen(trim($brand->factory_code))));
-                            if (strlen(trim($txtPartialFinal))>3) {
-                                $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_2));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_2, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
                             }
                         }
-                    }
 
-                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
-                    $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_3));
-                    if (strlen(trim($txtPartialIni))>3) {
-                        $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                        if (!$result) {
-                            $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_3, strlen(trim($brand->factory_code))));
-                            if (strlen(trim($txtPartialFinal))>3) {
-                                $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_3));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_3, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
                             }
                         }
-                    }
 
-
-                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
-                    $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_4));
-                    if (strlen(trim($txtPartialIni))>3) {
-                        $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                        if (!$result) {
-                            $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_4, strlen(trim($brand->factory_code))));
-                            if (strlen(trim($txtPartialFinal))>3) {
-                                $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_4));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_4, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
                             }
                         }
-                    }
 
-
-                    //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
-                    $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_5));
-                    if (strlen(trim($txtPartialIni))>3) {
-                        $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                        if (!$result) {
-                            $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_5, strlen(trim($brand->factory_code))));
-                            if (strlen(trim($txtPartialFinal))>3) {
-                                $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_5));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_5, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
                             }
                         }
                     }
@@ -411,9 +476,7 @@ class ExtractionDataSearch implements ShouldQueue
                                     id,
                                     UPPER(descripcionComercial),
                                     substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",descripcionComercial)-1,1) AS CARACTER_ANTERIOR,
-                                    "'.$article_to_search.'" AS article_to_search,
-                                    LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)) as POSICION,
-                                    (LOCATE("'.$article_to_search.'", UPPER(descripcionComercial)) + LENGTH("'.$article_to_search.'") - 1) as FINAL_WORD,
+                                    (LOCATE("'.$article_to_search.'", UPPER(descripcionComercial)) + CHAR_LENGTH("'.$article_to_search.'") - 1) as FINAL_WORD,
                                     LENGTH(descripcionComercial) as total_cadena,
                                     IF((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
                                     substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
@@ -437,9 +500,8 @@ class ExtractionDataSearch implements ShouldQueue
                                     ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($article_to_search)).'%"')
                                     ->get();
             if(count($listFounded)>0){
-                print_r("brand: ".$brand_code." ArticuloInicial: ".$article_ini." articuloSearch: ".$article_to_search."\n" );
-                $this->validateArticleFounded($listFounded,$article_ini,$article_to_search,$is_partial);
-                return true;
+                // print_r("brand: ".$brand_code." ArticuloInicial: ".$article_ini." articuloSearch: ".$article_to_search."\n" );
+                return $this->validateArticleFounded($listFounded,$article_ini,$article_to_search,$is_partial);
             }
             return false;
         }else{
@@ -448,6 +510,7 @@ class ExtractionDataSearch implements ShouldQueue
     }
 
     function validateArticleFounded($listFounded,$article_ini,$article_to_search,$is_partial){
+        $result = false;
         $status_founded=false;
         foreach ($listFounded as $lst => $found) {
             //print_r("caracter anterior: ".$found->CARACTER_ANTERIOR." - validacion:  ".ctype_alpha($found->CARACTER_ANTERIOR)."\n" );
@@ -479,15 +542,18 @@ class ExtractionDataSearch implements ShouldQueue
 
                 if ($status_founded) {
                     if ($is_partial) {
-                        print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO PARCIAL:".$article_ini."\n" );
+                        // print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO PARCIAL:".$article_ini."\n" );
                         DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
+                        $result = false;
                     }else{
-                        print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO COMPLETO:".$article_ini."\n" );
+                        // print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO COMPLETO:".$article_ini."\n" );
                         DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'FOUNDED','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-success'));
+                        $result = true;
                     }
                 }
             }
         }
+        return $result;
     }
 
     function searchImporter($codigo,$importer_ini,$importer_to_search,$is_partial){
@@ -500,7 +566,7 @@ class ExtractionDataSearch implements ShouldQueue
                                     substring(UPPER(importador),LOCATE("'.$importer_to_search.'",importador)-1,1) AS CARACTER_ANTERIOR,
                                     "'.$importer_to_search.'" AS importer_to_search,
                                     LOCATE("'.$importer_to_search.'",UPPER(importador)) as POSICION,
-                                    (LOCATE("'.$importer_to_search.'", UPPER(importador)) + LENGTH("'.$importer_to_search.'") - 1) as FINAL_WORD,
+                                    (LOCATE("'.$importer_to_search.'", UPPER(importador)) + CHAR_LENGTH("'.$importer_to_search.'") - 1) as FINAL_WORD,
                                     LENGTH(importador) as total_cadena,
                                     IF((LOCATE("'.$this->caracter_1.'",UPPER(importador), LOCATE("'.$importer_to_search.'",UPPER(importador))) - 1) > 0, -- ultima posicion de la palabra de busqueda
                                     substring(UPPER(importador),LOCATE("'.$importer_to_search.'",UPPER(importador)),((LOCATE("'.$this->caracter_1.'",UPPER(importador), LOCATE("'.$importer_to_search.'",UPPER(importador)))) - LOCATE("'.$importer_to_search.'",UPPER(importador)))),
@@ -586,7 +652,7 @@ class ExtractionDataSearch implements ShouldQueue
                                     substring(UPPER(embarcadorExportador),LOCATE("'.$provider_to_search.'",embarcadorExportador)-1,1) AS CARACTER_ANTERIOR,
                                     "'.$provider_to_search.'" AS provider_to_search,
                                     LOCATE("'.$provider_to_search.'",UPPER(embarcadorExportador)) as POSICION,
-                                    (LOCATE("'.$provider_to_search.'", UPPER(embarcadorExportador)) + LENGTH("'.$provider_to_search.'") - 1) as FINAL_WORD,
+                                    (LOCATE("'.$provider_to_search.'", UPPER(embarcadorExportador)) + CHAR_LENGTH("'.$provider_to_search.'") - 1) as FINAL_WORD,
                                     LENGTH(embarcadorExportador) as total_cadena,
                                     IF((LOCATE("'.$this->caracter_1.'",UPPER(embarcadorExportador), LOCATE("'.$provider_to_search.'",UPPER(embarcadorExportador))) - 1) > 0, -- ultima posicion de la palabra de busqueda
                                     substring(UPPER(embarcadorExportador),LOCATE("'.$provider_to_search.'",UPPER(embarcadorExportador)),((LOCATE("'.$this->caracter_1.'",UPPER(embarcadorExportador), LOCATE("'.$provider_to_search.'",UPPER(embarcadorExportador)))) - LOCATE("'.$provider_to_search.'",UPPER(embarcadorExportador)))),
@@ -692,6 +758,234 @@ class ExtractionDataSearch implements ShouldQueue
                 }
             }
         }
+    }
+
+    function searchArticleNotFound($codeBrand,$nameMarca){
+        if (strlen(trim($codeBrand))>0) {
+            $lstArticleBrand = json_decode(file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand));
+            if (count($lstArticleBrand->data)>0) {
+                foreach ($lstArticleBrand->data as $d => $brand) {
+                    if (count($lstArticleBrand->data) == ($d + 1) ) {
+                        print_r("TOTAL DE ARTICULOS: ".$d." -> ARTICULO : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                    }
+                    print_r("fila: ".($d+1)." articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                    //buscamos el articulo tal cual
+                    $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
+                    $result = true;
+                    if (!$result) {
+                        //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_1));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_1, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
+                            }
+                        }
+
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_2));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_2, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
+                            }
+                        }
+
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_3));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_3, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
+                            }
+                        }
+
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_4));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_4, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
+                            }
+                        }
+
+                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
+                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_5));
+                        if (strlen(trim($txtPartialIni))>3) {
+                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                            if (!$result) {
+                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_5, strlen(trim($brand->factory_code))));
+                                if (strlen(trim($txtPartialFinal))>3) {
+                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function searchArticleByCodeBrandNotFound($nameMarca,$brand_code,$article_ini,$article_to_search,$is_partial){
+        $article_to_search = str_replace('"', '', $article_to_search);
+        if (strlen(trim($article_to_search))> 3) {
+            /*
+            $first = DB::table('extraction_subida')
+                                    ->selectRaw('
+                                    id,
+                                    UPPER(descripcionComercial),
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",descripcionComercial)-1,1) AS CARACTER_ANTERIOR,
+                                    (LOCATE("'.$article_to_search.'", UPPER(descripcionComercial)) + CHAR_LENGTH("'.$article_to_search.'") - 1) as FINAL_WORD,
+                                    LENGTH(descripcionComercial) as total_cadena,
+                                    IF((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_ESPACIO,
+                                    IF((LOCATE("'.$this->caracter_2.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_2.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_COMA,
+                                    IF((LOCATE("'.$this->caracter_3.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_3.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_GUION,
+                                    IF((LOCATE("'.$this->caracter_4.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_4.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_PARENTESIS,
+                                    IF((LOCATE("'.$this->caracter_5.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_5.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_CORCHETES
+                                    ')
+                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('marca','!=',$brand_code)
+                                    ->where('status','FOUNDED')
+                                    ->where('statusArticle','NOT_FOUND')
+                                    ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($article_to_search)).'%"');
+            $listFounded = DB::table('extraction_subida')
+                                    ->selectRaw('
+                                    id,
+                                    UPPER(descripcionComercial),
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",descripcionComercial)-1,1) AS CARACTER_ANTERIOR,
+                                    (LOCATE("'.$article_to_search.'", UPPER(descripcionComercial)) + CHAR_LENGTH("'.$article_to_search.'") - 1) as FINAL_WORD,
+                                    LENGTH(descripcionComercial) as total_cadena,
+                                    IF((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_ESPACIO,
+                                    IF((LOCATE("'.$this->caracter_2.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_2.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_COMA,
+                                    IF((LOCATE("'.$this->caracter_3.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_3.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_GUION,
+                                    IF((LOCATE("'.$this->caracter_4.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_4.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_PARENTESIS,
+                                    IF((LOCATE("'.$this->caracter_5.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_5.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_CORCHETES
+                                    ')
+                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('marca','!=',$brand_code)
+                                    ->where('status','PARTIAL_FOUND')
+                                    ->where('statusArticle','NOT_FOUND')
+                                    ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($article_to_search)).'%"')
+                                    ->union($first)
+                                    ->get();*/
+            $listFounded = DB::table('extraction_subida')
+                                    ->selectRaw('
+                                    id,
+                                    UPPER(descripcionComercial),
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",descripcionComercial)-1,1) AS CARACTER_ANTERIOR,
+                                    (LOCATE("'.$article_to_search.'", UPPER(descripcionComercial)) + CHAR_LENGTH("'.$article_to_search.'") - 1) as FINAL_WORD,
+                                    LENGTH(descripcionComercial) as total_cadena,
+                                    IF((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_1.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_ESPACIO,
+                                    IF((LOCATE("'.$this->caracter_2.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_2.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_COMA,
+                                    IF((LOCATE("'.$this->caracter_3.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_3.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_GUION,
+                                    IF((LOCATE("'.$this->caracter_4.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_4.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_PARENTESIS,
+                                    IF((LOCATE("'.$this->caracter_5.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial))) - 1) > 0, -- ultima posicion de la palabra de busqueda
+                                    substring(UPPER(descripcionComercial),LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)),((LOCATE("'.$this->caracter_5.'",UPPER(descripcionComercial), LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))) - LOCATE("'.$article_to_search.'",UPPER(descripcionComercial)))),
+                                    "'.$this->not_result.'") AS FINAL_CORCHETES
+                                    ')
+                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('marca','!=',$brand_code)
+                                    //->whereIn('status',['FOUNDED','PARTIAL_FOUND'])
+                                    ->whereRaw('(status="FOUNDED" OR status="PARTIAL_FOUND")')
+                                    ->where('statusArticle','NOT_FOUND')
+                                    ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($article_to_search)).'%"')
+                                    ->get();
+            //dd($listFounded);
+            if(count($listFounded)>0){
+                // print_r("brand: ".$brand_code." ArticuloInicial: ".$article_ini." articuloSearch: ".$article_to_search."\n" );
+                return $this->validateArticleNotFound($nameMarca,$brand_code,$listFounded,$article_ini,$article_to_search,$is_partial);
+            }
+            return false;
+        }else{
+            return false;
+        }
+    }
+
+    function validateArticleNotFound($nameMarca,$brand_code,$listFounded,$article_ini,$article_to_search,$is_partial){
+        $result = false;
+        $status_founded=false;
+        foreach ($listFounded as $lst => $found) {
+            //print_r("caracter anterior: ".$found->CARACTER_ANTERIOR." - validacion:  ".ctype_alpha($found->CARACTER_ANTERIOR)."\n" );
+            if(!ctype_alpha($found->CARACTER_ANTERIOR)){
+                switch($article_to_search){
+                    case (strtoupper(trim($found->FINAL_ESPACIO)) == $article_to_search):
+                        $status_founded=true;
+                        break;
+                    case (strtoupper(trim($found->FINAL_COMA)) == $article_to_search):
+                        $status_founded=true;
+                        break;
+                    case (strtoupper(trim($found->FINAL_GUION)) == $article_to_search):
+                        $status_founded=true;
+                        break;
+                    case (strtoupper(trim($found->FINAL_PARENTESIS)) == $article_to_search):
+                        $status_founded=true;
+                        break;
+                    case (strtoupper(trim($found->FINAL_CORCHETES)) == $article_to_search):
+                        $status_founded=true;
+                        break;
+                    default:
+                        if ($found->FINAL_WORD == $found->total_cadena) {
+                            $status_founded = true;
+                        }else{
+                            $status_founded = false;
+                        }
+                        break;
+                }
+
+                if ($status_founded) {
+                    if ($is_partial) {
+                        // print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO PARCIAL:".$article_ini."\n" );
+                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','status' => 'FOUNDED','marca'=> $brand_code, 'nameMarca'=> $nameMarca,'codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
+                        $result = false;
+                    }else{
+                        // print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO COMPLETO:".$article_ini."\n" );
+                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'FOUNDED','status' => 'FOUNDED','marca'=> $brand_code, 'nameMarca'=> $nameMarca,'codigo' => $article_ini,'typeFoundArticle' => 'badge bg-success'));
+                        $result = true;
+                    }
+                }
+            }
+        }
+        return $result;
     }
 
     public function validateAlpha($attribute, $value)

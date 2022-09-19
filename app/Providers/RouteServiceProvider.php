@@ -17,8 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
-
+    public const HOME = '/admin/extraccion/import/subidas';
     /**
      * The controller namespace for the application.
      *

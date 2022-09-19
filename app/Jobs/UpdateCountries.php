@@ -41,7 +41,7 @@ class UpdateCountries implements ShouldQueue
                 if (count($existBrand)>0) {
                     //print_r("cantidad: ".count($existBrand)." marca:".$br->name." - Ya existente\n" );
                 }else {
-                    $data=array('code'=>trim($br->code),"name"=>($br->name),"lengthName"=>strlen(trim($br->name)),"idRefence"=>$br->id);
+                    $data=array('code'=>trim($br->code),"name"=>trim($br->name),"typeSearchBrand"=>trim($br->name),"lengthName"=>strlen(trim($br->name)),"idRefence"=>$br->id);
                     DB::table('mst_product_brand')->insert($data);
                 }
             }
