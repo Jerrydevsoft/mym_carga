@@ -52,10 +52,10 @@ class ExtractionDataSearch implements ShouldQueue
 
         if ($this->extractionHeader->id > 0) {
             $this->processMissingBrand();
-            $this->processMissingArticleBrand();
-            $this->processMissingProvider();
-            $this->processMissingCustomer();//importadores
-            $this->processMissingCountry();
+            // $this->processMissingArticleBrand();
+            // $this->processMissingProvider();
+            // $this->processMissingCustomer();//importadores
+            // $this->processMissingCountry();
         }
 
         //$lstProviders = DB::table("extraction_subida")->selectRaw('DISTINCT(marca) as codMarca')->where('extractionHeaderId', $this->extractionHeader->id)->get();
@@ -244,6 +244,7 @@ class ExtractionDataSearch implements ShouldQueue
 
     function searchBrandByName($extractionHeader,$brand_code,$brand_name_ini,$brand_to_search,$is_partial=false){
         if (strlen(trim($brand_to_search))> 1) {
+            print_r("search codbrand: ".$brand_code." namebrand:".$brand_to_search."\n" );
             $listFounded = DB::table('extraction_subida')
                                     ->selectRaw('
                                     id,
@@ -318,10 +319,10 @@ class ExtractionDataSearch implements ShouldQueue
 
                 if ($status_founded) {
                     if ($is_partial) {
-                        //print_r("partials brand: ".$brand_to_search."\n" );
+                        print_r("partials brand: ".$brand_to_search."\n" );
                         DB::table('extraction_subida')->where('id', $found->id)->update(array('status' => 'PARTIAL_FOUND', 'marca' => $brand_code, 'nameMarca' => $brand_name_ini, 'typeFoundColor' => 'badge bg-warning'));
                     }else{
-                        //print_r("FOUNDED: ".$brand_to_search."\n" );
+                        print_r("FOUNDED: ".$brand_to_search."\n" );
                         DB::table('extraction_subida')->where('id', $found->id)->update(array('status' => 'FOUNDED', 'marca' => $brand_code, 'nameMarca' => $brand_name_ini, 'typeFoundColor' => 'badge bg-success'));
                     }
                 }
