@@ -52,19 +52,12 @@ class ExtractionDataSearch implements ShouldQueue
 
         if ($this->extractionHeader->id > 0) {
             $this->processMissingBrand();
-<<<<<<< HEAD
             $this->processMissingArticleBrand();
             $this->processMissingProvider();
             $this->processMissingCustomer();//importadores
             $this->processMissingCountry();
             DB::table('extraction_header')->where('id', $this->extractionHeader->id)->update(array('status' => 'COMPLETE'));
             // $this->processArticleNotFound();
-=======
-            // $this->processMissingArticleBrand();
-            // $this->processMissingProvider();
-            // $this->processMissingCustomer();//importadores
-            // $this->processMissingCountry();
->>>>>>> 677429df2550dafacaa69e89cac57fc462e602d6
         }
 
         //$lstProviders = DB::table("extraction_subida")->selectRaw('DISTINCT(marca) as codMarca')->where('extractionHeaderId', $this->extractionHeader->id)->get();
