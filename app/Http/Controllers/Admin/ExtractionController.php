@@ -40,6 +40,7 @@ class ExtractionController extends Controller
     public function importData(Request $request){
         set_time_limit(500);
         ini_set('memory_limit', '2048M');
+        ini_set('opcache.enable', '0');
         $responsable = $request->input('responsable');
         $idHeader = 0;
 
