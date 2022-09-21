@@ -66,8 +66,8 @@ class ExtractionController extends Controller
                 // $extractionHeader->id = 3;
                 $idHeader = $extractionHeader->id;
                 $response = Excel::import(new ExtractionImport($idHeader,$responsable), request()->file('excelin')->store('temp'));
-                Excel::queueImport(new ExtractionImport($idHeader,$responsable), request()->file('excelin')->store('temp'));
-                // ExtractionDataSearch::dispatch($extractionHeader);
+                // Excel::queueImport(new ExtractionImport($idHeader,$responsable), request()->file('excelin')->store('temp'));
+                ExtractionDataSearch::dispatch($extractionHeader);
                 // return redirect()->to(url('admin/extraccion/import/subidas'))->with('success',"Carga realizada con exito");
                 $status = 200;
             }
