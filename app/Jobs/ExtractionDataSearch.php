@@ -297,7 +297,8 @@ class ExtractionDataSearch implements ShouldQueue
                                     "'.$this->not_result.'") AS FINAL_CORCHETES
                                     ')
                                     ->where('extractionHeaderId', $extractionHeader)
-                                    ->whereIn('status',['CHARGED','PARTIAL_FOUND'])
+                                    // ->whereIn('status',['CHARGED','PARTIAL_FOUND'])
+                                    ->whereRaw('(status="CHARGED" OR status="PARTIAL_FOUND")')
                                     ->where('isActive',1)
                                     ->where('isDeleted',0)
                                     ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($brand_to_search)).'%"')
@@ -497,7 +498,8 @@ class ExtractionDataSearch implements ShouldQueue
                                     ')
                                     ->where('extractionHeaderId', $this->extractionHeader->id)
                                     ->where('marca',$brand_code)
-                                    ->whereIn('statusArticle',['CHARGED','PARTIAL_FOUND'])
+                                    // ->whereIn('statusArticle',['CHARGED','PARTIAL_FOUND'])
+                                    ->whereRaw('(statusArticle="CHARGED" OR statusArticle="PARTIAL_FOUND")')
                                     ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($article_to_search)).'%"')
                                     ->get();
             if(count($listFounded)>0){
@@ -586,7 +588,8 @@ class ExtractionDataSearch implements ShouldQueue
                                     "'.$this->not_result.'") AS FINAL_CORCHETES
                                     ')
                                     ->where('extractionHeaderId', $this->extractionHeader->id)
-                                    ->whereIn('statusImporter',['CHARGED','PARTIAL_FOUND'])
+                                    // ->whereIn('statusImporter',['CHARGED','PARTIAL_FOUND'])
+                                    ->whereRaw('(statusImporter="CHARGED" OR statusImporter="PARTIAL_FOUND")')
                                     ->whereRaw('UPPER(TRIM(importador)) like "%'.strtoupper(trim($importer_to_search)).'%"')
                                     ->get();
             if(count($listFounded)>0){
@@ -672,7 +675,8 @@ class ExtractionDataSearch implements ShouldQueue
                                     "'.$this->not_result.'") AS FINAL_CORCHETES
                                     ')
                                     ->where('extractionHeaderId', $this->extractionHeader->id)
-                                    ->whereIn('statusProvider',['CHARGED','PARTIAL_FOUND'])
+                                    // ->whereIn('statusProvider',['CHARGED','PARTIAL_FOUND'])
+                                    ->whereRaw('(statusProvider="CHARGED" OR statusProvider="PARTIAL_FOUND")')
                                     ->whereRaw('UPPER(TRIM(embarcadorExportador)) like "%'.strtoupper(trim($provider_to_search)).'%"')
                                     ->get();
             if(count($listFounded)>0){

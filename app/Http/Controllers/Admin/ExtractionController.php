@@ -378,7 +378,37 @@ class ExtractionController extends Controller
         return json_encode($result);
     }
 
-    public function test(){
-        print_r("::::::::::::: test controller  :::::::::::\n" );
+    public function showDetailResult(Request $request){
+        $idHeader = $request->get('idHeader');
+        if ($idHeader > 0) {
+            $first = DB::table('extraction_subida')
+                                    ->selectRaw('
+                                    "MARCA" AS campo
+                                    status as estado,
+                                    count(status) as cantidad
+                                    ')
+                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->groupBy('status');
+            $listFounded = DB::table('extraction_subida')
+                                    ->selectRaw('
+                                    "ARTICULO" AS campo
+                                    statusArticle as estado,
+                                    count(statusArticle) as cantidad
+                                    ')
+                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->groupBy('statusArticle')
+                                    ->union($first)
+                                    ->get();
+            dd($listFounded);
+            $status = 200;
+        }else{
+            $status = 500;
+        }
+
+        $result = [
+            'status' => $status,
+            'data' => $listFounded
+        ];
+        return json_encode($result);
     }
 }
