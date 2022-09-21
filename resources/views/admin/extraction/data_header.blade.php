@@ -186,12 +186,14 @@
                         "_token": "{{ csrf_token() }}"
                     },
                     success: function(result){
+                        console.log(result);
                         if (result.status == 200) {
+                            console.log(result.dataHeader);
                             htmlHeader += '<div class="col-md-4">CAMPO</div>';
                             htmlHeader += '<div class="col-md-4">ESTADO</div>';
                             htmlHeader += '<div class="col-md-4">CANTIDAD</div>';
                             
-                            $.each(data.dataHeader, function(i, item) {
+                            $.each(result.dataHeader, function(i, item) {
                                 htmlHeader += '<div class="col-md-4">'+item.campo+'</div>';
                                 switch (item.estado) {
                                             case 'FOUNDED':
