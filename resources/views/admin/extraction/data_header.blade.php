@@ -232,7 +232,7 @@
                             htmlDetail += '<div class="col-md-2">FILAS</div>';
                             htmlDetail += '<div class="col-md-3">ESTADO</div>';
                             htmlDetail += '<div class="col-md-2">CANT. ARTIC</div>';
-                            $.each(data.dataHeader, function(f, fila) {
+                            $.each(result.dataHeader, function(f, fila) {
                                 htmlDetail += '<div class="col-md-5">'+fila.nameMarca+'</div>';
                                 htmlDetail += '<div class="col-md-2">'+fila.filas_marca+'</div>';
                                 switch (fila.estado_articulo) {
