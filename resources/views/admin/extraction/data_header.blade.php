@@ -58,7 +58,7 @@
                                     <td>{{ $registro->totalFound }}</td>
                                     <td>{{ $registro->totalMissing }}</td>
                                     <td>{{ $registro->status }}</td>
-                                    <td>{{ $registro->datetimecreated }}</td>
+                                    <td>{{ $registro->fecha_creacion }}</td>
                                     <td>{{ $registro->usrCreated }}</td>
                                     <td>
                                         <a href="{{ route('extraccion.data.revision', ['idHeader' => $registro->id])  }}">revisar</a>&nbsp;&nbsp;

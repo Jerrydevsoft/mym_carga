@@ -41,7 +41,12 @@ class ExtractionController extends Controller
         set_time_limit(3600);
         ini_set('memory_limit', '2048M');
         ini_set('opcache.enable', '0');
-        $responsable = $request->input('responsable');
+        // $responsable = $request->input('responsable');
+        $userId = Auth::id();
+        $user = User::find($userId);
+        if (is_object($user)) {
+            $responsable = $user->name;
+        }
         $idHeader = 0;
 
         if ($request->file('excelin')) {
@@ -73,8 +78,7 @@ class ExtractionController extends Controller
 
     /* ::: listamos todas las cargas que se realizaron :::: */
     public function getListChargeHeader(){
-        $registros = ExtractionHeaderModel::get()->sortByDesc('id');
-
+        $registros = ExtractionHeaderModel::selectRaw('*,FROM_UNIXTIME(datetimecreated) as fecha_creacion')->get()->sortByDesc('id');
         return view('admin.extraction.data_header', compact('registros'));
     }
 
@@ -254,6 +258,13 @@ class ExtractionController extends Controller
     public function executeActionData(Request $request){
         $id = $request->get('id');
         $accion = $request->get('action');
+        $userId = Auth::id();
+        $user = User::find($userId);
+        if (is_object($user)) {
+            $responsable = $user->name;
+        }else{
+            $responsable = "";
+        }
         if($accion == 'edit'){
             // $data = array(
             // 'dua'                   => $request->get('dua'),
@@ -303,7 +314,9 @@ class ExtractionController extends Controller
                 'puertoEmbarque'        => $request->get('puertoEmbarque'),
                 'descripcionComercial'  => $request->get('descripcionComercial'),
                 'marca'                 => $request->get('marca'),
-                'nameMarca'             => $request->get('nameMarca')
+                'nameMarca'             => $request->get('nameMarca'),
+                'datetimemodified'      => time(),
+                'usrModified'           => $responsable
             );
 
             ExtractionModel::where('id', $id)
@@ -313,7 +326,9 @@ class ExtractionController extends Controller
             $rspta = array(
                 'status' => $status,
                 'message' => $message,
-                'action' => $accion
+                'action' => $accion,
+                'datetimemodified' => time(),
+                'usrModified' => $responsable
             );
             return json_encode($rspta);
         }

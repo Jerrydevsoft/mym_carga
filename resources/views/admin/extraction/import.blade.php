@@ -13,18 +13,18 @@
                 <h1>Extracción</h1>
             </div>
             <div class="card-body">
-                <form action="{{route('extraccion.importData')}}" enctype="multipart/form-data" method="post">
+                <form action="{{route('extraccion.importData')}}" id="formUpload" enctype="multipart/form-data" method="post">
                 @csrf
                 <div class="row" style="width:70%; margin:auto;">
                     <div class="col-12" style="text-align: center;">
                         <img src="{{ asset('images/logo.png') }}" style="max-width:20vw">
                     </div>
-                    <div class="col-md-12">
+                    {{-- <div class="col-md-12">
                         <div class="form-group">
                             <label for="responsable">Responsable</label>
                             <input type="text" id="responsable" name="responsable" class="form-control" placeholder="Por favor ingrese el responsable de esta carga.">
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="responsable">Importar</label>
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button class="form-control btn btn-success" type="submit" role="submit">Procesar</button>
+                        <button class="form-control btn btn-success" id="btnSubmit" type="submit" role="submit">Procesar</button>
                     </div>
                 </div>
                 </form>
@@ -48,5 +48,17 @@
 @stop
 
 @section('js')
-    <script> console.log('Hi!'); </script>
+<script>
+    $(document).ready(function(){
+        $("#formUpload").submit(function (e) {
+            //stop submitting the form to see the disabled button effect
+            e.preventDefault();
+            //disable the submit button
+            $("#btnSubmit").attr("disabled", true);
+            //disable a normal button
+            // $("#btnTest").attr("disabled", true);
+        return true;
+        });
+    });
+</script>
 @stop
