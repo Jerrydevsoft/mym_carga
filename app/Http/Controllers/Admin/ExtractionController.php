@@ -384,7 +384,7 @@ class ExtractionController extends Controller
         if ($idHeader > 0) {
             $first = DB::table('extraction_subida')
                                     ->selectRaw('
-                                    "MARCA" AS campo
+                                    "MARCA" AS campo,
                                     status as estado,
                                     count(status) as cantidad
                                     ')
@@ -392,7 +392,7 @@ class ExtractionController extends Controller
                                     ->groupBy('status');
             $listFounded = DB::table('extraction_subida')
                                     ->selectRaw('
-                                    "ARTICULO" AS campo
+                                    "ARTICULO" AS campo,
                                     statusArticle as estado,
                                     count(statusArticle) as cantidad
                                     ')
