@@ -62,14 +62,24 @@
             $.ajax({
                 url: "{{ route('extraccion.importData') }}",
                 data: formData,
+                async:true,
                 cache: false,
                 processData: false,
                 contentType: false,
                 type: 'POST',
+                dataType:'json',
                 beforeSend:function(){
+                    Swal.showLoading();
                 },
                 success: function (response) {
-                   console.log("hola");
+                   if (response.status == 200) {
+                        window.location.href = "{{ route('extraccion.data')}}";
+                   }else{
+                        window.location.href = "{{ route('extraccion.import')}}";
+                   }
+                },
+                error:function(objXMLHttpRequest){
+                    console.log(objXMLHttpRequest);
                 }
             });
         });
