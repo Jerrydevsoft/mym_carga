@@ -388,7 +388,7 @@ class ExtractionController extends Controller
                                     status as estado,
                                     count(status) as cantidad
                                     ')
-                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('extractionHeaderId', $idHeader)
                                     ->groupBy('status');
             $listFounded = DB::table('extraction_subida')
                                     ->selectRaw('
@@ -396,7 +396,7 @@ class ExtractionController extends Controller
                                     statusArticle as estado,
                                     count(statusArticle) as cantidad
                                     ')
-                                    ->where('extractionHeaderId', $this->extractionHeader->id)
+                                    ->where('extractionHeaderId', $idHeader)
                                     ->groupBy('statusArticle')
                                     ->union($first)
                                     ->get();
