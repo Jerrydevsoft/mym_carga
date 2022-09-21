@@ -381,6 +381,8 @@ class ExtractionController extends Controller
 
     public function showDetailResult(Request $request){
         $idHeader = $request->get('idHeader');
+        $dataHead = [];
+        $dataDetail = [];
         if ($idHeader > 0) {
             $first = DB::table('extraction_subida')
                                     ->selectRaw('
@@ -390,7 +392,7 @@ class ExtractionController extends Controller
                                     ')
                                     ->where('extractionHeaderId', $idHeader)
                                     ->groupBy('status');
-            $listFounded = DB::table('extraction_subida')
+            $dataHead = DB::table('extraction_subida')
                                     ->selectRaw('
                                     "ARTICULO" AS campo,
                                     statusArticle as estado,
@@ -400,7 +402,23 @@ class ExtractionController extends Controller
                                     ->groupBy('statusArticle')
                                     ->union($first)
                                     ->get();
-            dd($listFounded);
+            if (count($dataHead)>0) {
+                $dataDetail = ExtractionModel::selectRaw('
+                                        nameMarca,
+                                        count(marca) as filas_marca,
+                                        count(codigo) as cantidad,
+                                        statusArticle as estado_articulo,
+                                        count(statusArticle) as cantidad_articulo
+                                        ')
+                                        ->where('extractionHeaderId', $idHeader)
+                                        ->groupBy('nameMarca')
+                                        ->groupBy('statusArticle')
+                                        ->orderBy('nameMarca','ASC')
+                                        ->orderBy('estado_articulo','ASC')
+                                        ->get();
+
+
+            }
             $status = 200;
         }else{
             $status = 500;
@@ -408,7 +426,8 @@ class ExtractionController extends Controller
 
         $result = [
             'status' => $status,
-            'data' => $listFounded
+            'dataHeader' => $dataHead,
+            'dataDetail' => $dataDetail
         ];
         return json_encode($result);
     }

@@ -84,10 +84,49 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>One fine body…</p>
+                        <!-- Tabs navs -->
+                        <ul class="nav nav-tabs mb-3" id="data_header" role="tablist">
+                            <li class="nav-item" role="presentation">
+                            <a
+                                class="nav-link active"
+                                id="data_header_tab"
+                                data-mdb-toggle="tab"
+                                href="#data_header_tabs"
+                                role="tab"
+                                aria-controls="data_header_tabs"
+                                aria-selected="true"
+                                >Tab 1</a
+                            >
+                            </li>
+                            <li class="nav-item" role="presentation">
+                            <a
+                                class="nav-link"
+                                id="data_detail_tab"
+                                data-mdb-toggle="tab"
+                                href="#data_detail_tabs"
+                                role="tab"
+                                aria-controls="data_detail_tabs"
+                                aria-selected="false"
+                                >Tab 2</a
+                            >
+                            </li>
+                        </ul>
+                        <!-- Tabs navs -->
+                        
+                        <!-- Tabs content -->
+                        <div class="tab-content" id="ex1-content">
+                            <div class="tab-pane fade show active" id="data_header_tabs" role="tabpanel" aria-labelledby="data_header_tab">
+                                <div class="row" id="divHeader">
+                                    
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="data_detail_tabs" role="tabpanel" aria-labelledby="data_detail_tab">
+                                <div class="row" id="divDetail">
+                                    
+                                </div>
+                            </div>
                         </div>
-                        <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <!-- Tabs content -->
                     </div>
                 </div>
             </div> 
@@ -136,6 +175,8 @@
 
     function extraction_showResultExtraction(idHeader){
         if (idHeader > 0) {
+            var htmlHeader = '';
+            var htmlDetail = '';
             $.ajax(
                 {
                     url: "{{ route('extraccion.data.mostrar.result') }}",
@@ -145,8 +186,85 @@
                         "_token": "{{ csrf_token() }}"
                     },
                     success: function(result){
-                        console.log(result);
-                        alert("La información se esta volviendo a procesar");
+                        if (result.status == 200) {
+                            htmlHeader += '<div class="col-md-4">CAMPO</div>';
+                            htmlHeader += '<div class="col-md-4">ESTADO</div>';
+                            htmlHeader += '<div class="col-md-4">CANTIDAD</div>';
+                            
+                            $.each(data.dataHeader, function(i, item) {
+                                htmlHeader += '<div class="col-md-4">'+item.campo+'</div>';
+                                switch (item.estado) {
+                                            case 'FOUNDED':
+                                                htmlHeader += '<div class="col-md-4">'+item.estado+'</div>';
+                                                //$(td +' .tabledit-span').addClass('badge bg-success');
+                                                //$(td).css('margin', 'auto');
+                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-success" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                break;
+                                            case 'NOT_FOUND':
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-danger" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
+                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'red');
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-warning" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
+                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'green');
+                                                break;
+                                            default:
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-primary" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
+                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'light-blue');
+                                                break;
+                                        }
+                                
+                                htmlHeader += '<div class="col-md-4">'+item.cantidad+'</div>';
+                            });
+                            $("#divHeader").html(htmlHeader);
+
+                            htmlDetail += '<div class="col-md-5">MARCA</div>';
+                            htmlDetail += '<div class="col-md-2">FILAS</div>';
+                            htmlDetail += '<div class="col-md-3">ESTADO</div>';
+                            htmlDetail += '<div class="col-md-2">CANT. ARTIC</div>';
+                            $.each(data.dataHeader, function(f, fila) {
+                                htmlDetail += '<div class="col-md-5">'+fila.nameMarca+'</div>';
+                                htmlDetail += '<div class="col-md-2">'+fila.filas_marca+'</div>';
+                                switch (fila.estado_articulo) {
+                                            case 'FOUNDED':
+                                                //$(td +' .tabledit-span').addClass('badge bg-success');
+                                                //$(td).css('margin', 'auto');
+                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-success" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                break;
+                                            case 'NOT_FOUND':
+                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-danger" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
+                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'red');
+                                                break;
+                                            case 'PARTIAL_FOUND':
+                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-warning" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
+                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'green');
+                                                break;
+                                            default:
+                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-primary" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
+                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
+                                                //$(td).css('background-color', 'light-blue');
+                                                break;
+                                        }
+                                htmlDetail += '<div class="col-md-3">'+fila.estado_articulo+'</div>';
+                                htmlDetail += '<div class="col-md-2">'+fila.cantidad_articulo+'</div>';
+                            });
+
+                            $("#divDetail").html(htmlDetail);
+                            $('#modal-result').modal('show');
+                        }
                 }});
         }
     }
