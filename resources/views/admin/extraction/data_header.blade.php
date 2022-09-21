@@ -181,14 +181,15 @@
                 {
                     url: "{{ route('extraccion.data.mostrar.result') }}",
                     type: 'POST',
+                    dataType:'json',
                     data:{
                         idHeader: idHeader,
                         "_token": "{{ csrf_token() }}"
                     },
                     success: function(result){
-                        console.log(result);
+                        // console.log(result.status);
                         if (result.status == 200) {
-                            console.log(result.dataHeader);
+                            // console.log(result.status);
                             htmlHeader += '<div class="col-md-4">CAMPO</div>';
                             htmlHeader += '<div class="col-md-4">ESTADO</div>';
                             htmlHeader += '<div class="col-md-4">CANTIDAD</div>';
