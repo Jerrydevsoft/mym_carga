@@ -3,6 +3,10 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    <IfModule mod_php7.c>
+        php_value max_execution_time 3600
+        php_flag opcache.enable Off
+    </IfModule>
     RewriteEngine On
 
     # Handle Authorization Header
@@ -19,4 +23,4 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-php_flag opcache.enable Off
+

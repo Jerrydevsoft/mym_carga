@@ -88,4 +88,9 @@ class ExtractionImport implements ToModel, WithStartRow
             return \Carbon\Carbon::createFromFormat($format, $value);
         }
     }
+
+    // public function chunkSize(): int
+    // {
+    //     return 10000;
+    // }
 }

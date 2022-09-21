@@ -38,7 +38,7 @@ class ExtractionController extends Controller
     }
 
     public function importData(Request $request){
-        set_time_limit(500);
+        set_time_limit(3600);
         ini_set('memory_limit', '2048M');
         ini_set('opcache.enable', '0');
         $responsable = $request->input('responsable');
@@ -59,6 +59,7 @@ class ExtractionController extends Controller
                 // $extractionHeader->id = 3;
                 $idHeader = $extractionHeader->id;
                 $response = Excel::import(new ExtractionImport($idHeader,$responsable), request()->file('excelin')->store('temp'));
+                // Excel::queueImport(new ExtractionImport($idHeader,$responsable), request()->file('excelin')->store('temp'));
                 ExtractionDataSearch::dispatch($extractionHeader);
                 return redirect()->to(url('admin/extraccion/import/subidas'))->with('success',"Carga realizada con exito");
             }
