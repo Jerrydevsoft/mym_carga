@@ -57,7 +57,21 @@
             $("#btnSubmit").attr("disabled", true);
             //disable a normal button
             // $("#btnTest").attr("disabled", true);
-        return true;
+            var myform = document.getElementById("formUpload");
+            let formData = new FormData(myform);
+            $.ajax({
+                url: "{{ route('extraccion.importData') }}",
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                beforeSend:function(){
+                },
+                success: function (response) {
+                   console.log("hola");
+                }
+            });
         });
     });
 </script>

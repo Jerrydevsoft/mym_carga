@@ -74,6 +74,12 @@ class ExtractionController extends Controller
         }else{
             return redirect()->to(url('extraccion/import'))->with('error',"Hubo problemas con el archivo");
         }
+
+        $response = [
+            'status' => 200,
+            'data' => $responsable
+        ];
+        return json_encode($response);
     }
 
     /* ::: listamos todas las cargas que se realizaron :::: */
