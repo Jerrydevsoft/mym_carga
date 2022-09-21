@@ -28,7 +28,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']],function () {
     Route::post('/extraccion/import/subidas/upload/action', [App\Http\Controllers\Admin\ExtractionController::class, 'executeActionData'])->name('extraccion.data.upload.action');
     Route::post('/extraccion/import/subidas/table', [App\Http\Controllers\Admin\ExtractionController::class, 'getTableByHeaderId'])->name('extraccion.data.table');
     Route::post('/extraccion/importData', [App\Http\Controllers\Admin\ExtractionController::class, 'importData'])->name('extraccion.importData');
-    Route::post('/extraccion/subidas/mostrarResultado/{idHeader}', [App\Http\Controllers\Admin\ExtractionController::class, 'showDetailResult'])->name('extraccion.data.mostrar.result');
+    Route::post('/extraccion/subidas/mostrarResultado', [App\Http\Controllers\Admin\ExtractionController::class, 'showDetailResult'])->name('extraccion.data.mostrar.result');
 
     Route::get('/logout', [App\Http\Controllers\Auth\LogoutController::class, 'perform'])->name('logout.perform');
 });
