@@ -13,6 +13,7 @@ use App\Imports\ExtractionImport;
 use App\Exports\ExtractionReportExport;
 use App\Exports\ExtractionReportGeneralExport;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExtractionController extends Controller
