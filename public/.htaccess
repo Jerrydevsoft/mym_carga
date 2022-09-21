@@ -5,10 +5,10 @@
 
     <IfModule mod_php7.c>
         php_value max_execution_time 3600
-        php_flag opcache.enable Off
     </IfModule>
+    php_flag opcache.enable Off
     RewriteEngine On
-
+    
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
