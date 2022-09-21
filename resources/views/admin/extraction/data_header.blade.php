@@ -62,7 +62,7 @@
                                     <td>{{ $registro->usrCreated }}</td>
                                     <td>
                                         <a href="{{ route('extraccion.data.revision', ['idHeader' => $registro->id])  }}">revisar</a>&nbsp;&nbsp;
-                                        <a href="javascript:void(0);" onclick="repeatProcess({{$registro->id}})">Procesar</a>
+                                        <a href="javascript:void(0);" onclick="repeatProcess({{$registro->id}})">Procesar</a>&nbsp;&nbsp;
                                         <a href="javascript:void(0);" onclick="extraction_showResultExtraction({{$registro->id}})">Reporte Busqueda</a>
                                     </td>
                                 </tr>
@@ -75,7 +75,7 @@
         </div>
 
         <div class="modal fade" id="modal-result" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog-lg" style="width:800px; margin: auto;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">RESULTADO DE BUSQUEDA HASTA EL MOMENTO</h4>
@@ -84,49 +84,35 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <!-- Tabs navs -->
-                        <ul class="nav nav-tabs mb-3" id="data_header" role="tablist">
-                            <li class="nav-item" role="presentation">
-                            <a
-                                class="nav-link active"
-                                id="data_header_tab"
-                                data-mdb-toggle="tab"
-                                href="#data_header_tabs"
-                                role="tab"
-                                aria-controls="data_header_tabs"
-                                aria-selected="true"
-                                >Tab 1</a
-                            >
-                            </li>
-                            <li class="nav-item" role="presentation">
-                            <a
-                                class="nav-link"
-                                id="data_detail_tab"
-                                data-mdb-toggle="tab"
-                                href="#data_detail_tabs"
-                                role="tab"
-                                aria-controls="data_detail_tabs"
-                                aria-selected="false"
-                                >Tab 2</a
-                            >
-                            </li>
-                        </ul>
-                        <!-- Tabs navs -->
-                        
-                        <!-- Tabs content -->
-                        <div class="tab-content" id="ex1-content">
-                            <div class="tab-pane fade show active" id="data_header_tabs" role="tabpanel" aria-labelledby="data_header_tab">
-                                <div class="row" id="divHeader">
-                                    
-                                </div>
+                        <div id="accordion">
+                          <div class="card">
+                            <div class="card-header" id="headingOne">
+                              <h5 class="mb-0">
+                                <button class="btn btn-link" onclick="extraction_toogleHeader('collapseOne');">
+                                  Header
+                                </button>
+                              </h5>
                             </div>
-                            <div class="tab-pane fade" id="data_detail_tabs" role="tabpanel" aria-labelledby="data_detail_tab">
-                                <div class="row" id="divDetail">
-                                    
-                                </div>
+
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                              <div class="card-body" id="divHeader">
+                              </div>
                             </div>
+                          </div>
+                          <div class="card">
+                            <div class="card-header" id="headingTwo">
+                              <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" onclick="extraction_toogleHeader('collapseTwo');">
+                                  Detail
+                                </button>
+                              </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                              <div class="card-body" id="divDetail">
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <!-- Tabs content -->
                     </div>
                 </div>
             </div> 
@@ -173,6 +159,10 @@
         }
     }
 
+    function extraction_toogleHeader(id){
+        $("#"+ id).fadeToggle( "slow", "linear" );
+    }
+
     function extraction_showResultExtraction(idHeader){
         if (idHeader > 0) {
             var htmlHeader = '';
@@ -190,11 +180,13 @@
                         // console.log(result.status);
                         if (result.status == 200) {
                             // console.log(result.status);
+                            htmlHeader += '<div class="row">';
                             htmlHeader += '<div class="col-md-4">CAMPO</div>';
                             htmlHeader += '<div class="col-md-4">ESTADO</div>';
                             htmlHeader += '<div class="col-md-4">CANTIDAD</div>';
-                            
+                            htmlHeader += '</div>';
                             $.each(result.dataHeader, function(i, item) {
+                                htmlHeader += '<div class="row">';
                                 htmlHeader += '<div class="col-md-4">'+item.campo+'</div>';
                                 switch (item.estado) {
                                             case 'FOUNDED':
@@ -225,14 +217,17 @@
                                         }
                                 
                                 htmlHeader += '<div class="col-md-4">'+item.cantidad+'</div>';
+                                htmlHeader += '</div>';
                             });
                             $("#divHeader").html(htmlHeader);
-
+                            htmlDetail += '<div class="row">';
                             htmlDetail += '<div class="col-md-5">MARCA</div>';
                             htmlDetail += '<div class="col-md-2">FILAS</div>';
                             htmlDetail += '<div class="col-md-3">ESTADO</div>';
                             htmlDetail += '<div class="col-md-2">CANT. ARTIC</div>';
-                            $.each(result.dataHeader, function(f, fila) {
+                            htmlDetail += '</div>';
+                            $.each(result.dataDetail, function(f, fila) {
+                                htmlDetail += '<div class="row">';
                                 htmlDetail += '<div class="col-md-5">'+fila.nameMarca+'</div>';
                                 htmlDetail += '<div class="col-md-2">'+fila.filas_marca+'</div>';
                                 switch (fila.estado_articulo) {
@@ -240,29 +235,29 @@
                                                 //$(td +' .tabledit-span').addClass('badge bg-success');
                                                 //$(td).css('margin', 'auto');
                                                 //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-success" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-success" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
                                                 break;
                                             case 'NOT_FOUND':
-                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-danger" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-danger" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-danger');
                                                 //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'red');
                                                 break;
                                             case 'PARTIAL_FOUND':
-                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-warning" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-warning" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-warning');
                                                 //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'green');
                                                 break;
                                             default:
-                                                htmlDetail += '<div class="col-md-4"><span class="badge bg-primary" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-primary" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-primary');
                                                 //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'light-blue');
                                                 break;
                                         }
-                                htmlDetail += '<div class="col-md-3">'+fila.estado_articulo+'</div>';
                                 htmlDetail += '<div class="col-md-2">'+fila.cantidad_articulo+'</div>';
+                                htmlDetail += '</div>';
                             });
 
                             $("#divDetail").html(htmlDetail);
