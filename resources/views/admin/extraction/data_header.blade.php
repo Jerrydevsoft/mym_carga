@@ -61,9 +61,9 @@
                                     <td>{{ $registro->fecha_creacion }}</td>
                                     <td>{{ $registro->usrCreated }}</td>
                                     <td>
-                                        <a href="{{ route('extraccion.data.revision', ['idHeader' => $registro->id])  }}">revisar</a>&nbsp;&nbsp;
-                                        <a href="javascript:void(0);" onclick="repeatProcess({{$registro->id}})">Procesar</a>&nbsp;&nbsp;
-                                        <a href="javascript:void(0);" onclick="extraction_showResultExtraction({{$registro->id}})">Reporte Busqueda</a>
+                                        <a href="{{ route('extraccion.data.revision', ['idHeader' => $registro->id])  }}" title="revisar"><i class="fas fa-edit" ></i></a>&nbsp;&nbsp;
+                                        <a href="javascript:void(0);" onclick="repeatProcess({{$registro->id}})" style="display: none;"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="javascript:void(0);" onclick="extraction_showResultExtraction({{$registro->id}})" title="Ver resultado"><i class="fas fa-bar-chart"></i></a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -78,7 +78,7 @@
             <div class="modal-dialog modal-result">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">RESULTADO DE BUSQUEDA HASTA EL MOMENTO</h4>
+                        <h4 class="modal-title">RESULTADO DE BUSQUEDA </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
