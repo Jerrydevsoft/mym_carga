@@ -1,51 +1,34 @@
-FROM php:7.4.1-apache
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  autoconf \
-  build-essential \
-  apt-utils \
-  zlib1g-dev \
-  libzip-dev \
-  unzip \
-  zip \
-  libmagick++-dev \
-  libmagickwand-dev \
-  libpq-dev \
-  libfreetype6-dev \
-  libjpeg62-turbo-dev \
-  libpng-dev \
-  libwebp-dev \ 
-  libxpm-dev 
-
-RUN docker-php-ext-configure gd --with-gd --with-webp-dir --with-jpeg-dir \
-    --with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir \
-    --enable-gd-native-ttf
-
-RUN docker-php-ext-configure zip --with-libzip
-
-RUN docker-php-ext-install gd intl pdo_mysql pdo_pgsql mysqli zip
-
-RUN pecl install imagick-3.4.3
-
-RUN pecl install xdebug && docker-php-ext-enable xdebug
-
-RUN docker-php-ext-enable imagick
-
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Clear package lists
-RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
-
-# Permissions
-RUN chown -R root:www-data /var/www/html
-RUN chmod u+rwx,g+rx,o+rx /var/www/html
-RUN find /var/www/html -type d -exec chmod u+rwx,g+rx,o+rx {} +
-RUN find /var/www/html -type f -exec chmod u+rw,g+rw,o+r {} +
-
-WORKDIR /var/www/html
+FROM php:7.4-apache
 
 RUN a2enmod rewrite
-RUN a2enmod ssl
 
-EXPOSE 80
-EXPOSE 443
+RUN apt-get update && apt-get install -y \
+        zlib1g-dev \
+        libicu-dev \
+        libxml2-dev \
+        libpq-dev \
+        libzip-dev \
+        && docker-php-ext-install pdo pdo_mysql zip intl xmlrpc soap opcache \
+        && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd
+
+
+RUN apt-get update -y 
+
+# Add Node 8 LTS
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -- \
+	&& apt-get install -y nodejs \
+	&& apt-get autoremove -y
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+COPY  docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY  docker/.env-pro /var/www/html/.env
+COPY  docker/php.ini /usr/local/etc/php/php.ini
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
+COPY  . /var/www/html/
+WORKDIR /var/www/html/
+
+RUN chown -R www-data:www-data /var/www/html  \
+    && composer install  && composer dumpautoload 
