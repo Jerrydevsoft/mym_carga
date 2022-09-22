@@ -79,7 +79,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">RESULTADO DE BUSQUEDA HASTA EL MOMENTO</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" onclick="extraction_closeModal('modal-result');" aria-label="Close">
                         <span aria-hidden="true">×</span>
                         </button>
                     </div>
@@ -163,6 +163,10 @@
         $("#"+ id).fadeToggle( "slow", "linear" );
     }
 
+    function extraction_closeModal(id){
+        $("#"+ id).modal('hide');
+    }
+
     function extraction_showResultExtraction(idHeader){
         if (idHeader > 0) {
             var htmlHeader = '';
@@ -190,7 +194,6 @@
                                 htmlHeader += '<div class="col-md-4">'+item.campo+'</div>';
                                 switch (item.estado) {
                                             case 'FOUNDED':
-                                                htmlHeader += '<div class="col-md-4">'+item.estado+'</div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-success');
                                                 //$(td).css('margin', 'auto');
                                                 //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")

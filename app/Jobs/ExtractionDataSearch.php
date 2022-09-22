@@ -176,9 +176,12 @@ class ExtractionDataSearch implements ShouldQueue
                 die;
                 */
                 print_r("fila customer: ".$c." documento: ".$customer->customer."\n" );
-                $objCustomer = json_decode(file_get_contents($this->urlBase .'customers/getCustomerByIdentification/'.$customer->customer));
-                if (!is_null($objCustomer) && is_object($objCustomer)) {
-                    DB::table('extraction_subida')->where('codTributario', $customer->customer)->update(array('statusImporter' => 'FOUNDED', 'codImporter' => $objCustomer->customer_code));
+                $result =file_get_contents($this->urlBase .'customers/getCustomerByIdentification/'.$customer->customer);
+                if ($result != false) {
+                    $objCustomer = json_decode($result);
+                    if (!is_null($objCustomer) && is_object($objCustomer)) {
+                        DB::table('extraction_subida')->where('codTributario', $customer->customer)->update(array('statusImporter' => 'FOUNDED', 'codImporter' => $objCustomer->customer_code));
+                    }
                 }
             }
         }
@@ -240,10 +243,13 @@ class ExtractionDataSearch implements ShouldQueue
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
         print_r("::::::::::::: regularizamos_paises_faltantes :::::::::::\n" );
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
-        $lstCountry = json_decode(file_get_contents($this->urlBase .'general/getCountries'));
-        if (count($lstCountry) > 0) {
-            foreach ($lstCountry as $c => $country) {
-                $this->searchCountryByName($this->extractionHeader->id,$country->codigo,$country->pais);
+        $result = file_get_contents($this->urlBase .'general/getCountries');
+        if ($result != false) {
+            $lstCountry = json_decode($result);
+            if (count($lstCountry) > 0) {
+                foreach ($lstCountry as $c => $country) {
+                    $this->searchCountryByName($this->extractionHeader->id,$country->codigo,$country->pais);
+                }
             }
         }
     }
@@ -395,77 +401,82 @@ class ExtractionDataSearch implements ShouldQueue
 
     function searchArticle($codeBrand){
         if (strlen(trim($codeBrand))>0) {
-            $lstArticleBrand = json_decode(file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand));
-            if (count($lstArticleBrand->data)>0) {
-                foreach ($lstArticleBrand->data as $d => $brand) {
-                    if (count($lstArticleBrand->data) == ($d + 1) ) {
-                        print_r("TOTAL DE ARTICULOS: ".$d." -> ARTICULO : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
-                    }
-                    //print_r("fila articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
-                    //buscamos el articulo tal cual
-                    $result = $this->searchArticleByCodeBrand($codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
-                    if (!$result) {
-                        //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_1));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_1, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+            $result = file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand);
+            if ($result != false) {
+                $lstArticleBrand = json_decode($result);
+                if (count($lstArticleBrand->data)>0) {
+                    foreach ($lstArticleBrand->data as $d => $brand) {
+                        if (count($lstArticleBrand->data) == ($d + 1) ) {
+                            print_r("TOTAL DE ARTICULOS: ".$d." -> ARTICULO : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                        }
+                        //print_r("fila articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                        //buscamos el articulo tal cual
+                        $result = $this->searchArticleByCodeBrand($codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
+                        if (!$result) {
+                            //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_1));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_1, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_2));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_2, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_2));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_2, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_3));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_3, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_3));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_3, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_4));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_4, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_4));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_4, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_5));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_5, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_5));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_5, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrand($codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }else{
+                print_r("FALLO AL TRAER LOS ARTICULOS DE LA FILA : ".$d." -> MARCA:".$codeBrand."\n" );
             }
         }
     }
@@ -767,73 +778,76 @@ class ExtractionDataSearch implements ShouldQueue
 
     function searchArticleNotFound($codeBrand,$nameMarca){
         if (strlen(trim($codeBrand))>0) {
-            $lstArticleBrand = json_decode(file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand));
-            if (count($lstArticleBrand->data)>0) {
-                foreach ($lstArticleBrand->data as $d => $brand) {
-                    if (count($lstArticleBrand->data) == ($d + 1) ) {
-                        print_r("TOTAL DE ARTICULOS: ".$d." -> ARTICULO : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
-                    }
-                    print_r("fila: ".($d+1)." articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
-                    //buscamos el articulo tal cual
-                    $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
-                    $result = true;
-                    if (!$result) {
-                        //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_1));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_1, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+            $result = file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand);
+            if ($result != false) {
+                $lstArticleBrand = json_decode($result);
+                if (count($lstArticleBrand->data)>0) {
+                    foreach ($lstArticleBrand->data as $d => $brand) {
+                        if (count($lstArticleBrand->data) == ($d + 1) ) {
+                            print_r("TOTAL DE ARTICULOS: ".$d." -> ARTICULO : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                        }
+                        print_r("fila: ".($d+1)." articulo : ".$brand->factory_code." codigo marca:".$codeBrand."\n" );
+                        //buscamos el articulo tal cual
+                        $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,trim($brand->factory_code),trim($brand->factory_code),false);
+                        $result = true;
+                        if (!$result) {
+                            //PROCEDEMOS A BUSCAR DE MANERA PARCIAL POR EL CARACTER 1
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_1));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_1, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_2));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_2, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 2
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_2));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_2, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_3));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_3, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 3
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_3));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_3, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_4));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_4, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 4
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_4));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_4, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
-                        }
-
-                        //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
-                        $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_5));
-                        if (strlen(trim($txtPartialIni))>3) {
-                            $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
-                            if (!$result) {
-                                $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_5, strlen(trim($brand->factory_code))));
-                                if (strlen(trim($txtPartialFinal))>3) {
-                                    $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+    
+                            //PROCEDEMOS A BUCAR DE MANERA PARCIAL POR EL CARACTER 5
+                            $txtPartialIni = substr($brand->factory_code, 0, strpos(trim($brand->factory_code), $this->caracter_5));
+                            if (strlen(trim($txtPartialIni))>3) {
+                                $result = $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialIni,true);
+                                if (!$result) {
+                                    $txtPartialFinal = substr($brand->factory_code, strpos(trim($brand->factory_code), $this->caracter_5, strlen(trim($brand->factory_code))));
+                                    if (strlen(trim($txtPartialFinal))>3) {
+                                        $this->searchArticleByCodeBrandNotFound($nameMarca,$codeBrand,$brand->factory_code,$txtPartialFinal,true);
+                                    }
                                 }
                             }
                         }
