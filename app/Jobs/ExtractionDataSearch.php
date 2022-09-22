@@ -176,12 +176,14 @@ class ExtractionDataSearch implements ShouldQueue
                 die;
                 */
                 // print_r("fila customer: ".$c." documento: ".$customer->customer."\n" );
-                $result =file_get_contents($this->urlBase .'customers/getCustomerByIdentification/'.$customer->customer);
+                $result =@file_get_contents($this->urlBase .'customers/getCustomerByIdentification/'.$customer->customer);
                 if ($result != false) {
                     $objCustomer = json_decode($result);
                     if (!is_null($objCustomer) && is_object($objCustomer)) {
                         DB::table('extraction_subida')->where('codTributario', $customer->customer)->update(array('statusImporter' => 'FOUNDED', 'codImporter' => $objCustomer->customer_code));
                     }
+                }else{
+                    continue;
                 }
             }
         }
@@ -243,8 +245,8 @@ class ExtractionDataSearch implements ShouldQueue
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
         print_r("::::::::::::: regularizamos_paises_faltantes :::::::::::\n" );
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
-        $result = file_get_contents($this->urlBase .'general/getCountries');
-        if ($result != false) {
+        $result = @file_get_contents($this->urlBase .'general/getCountries');
+        if ($result !== false) {
             $lstCountry = json_decode($result);
             if (count($lstCountry) > 0) {
                 foreach ($lstCountry as $c => $country) {
@@ -401,7 +403,7 @@ class ExtractionDataSearch implements ShouldQueue
 
     function searchArticle($codeBrand){
         if (strlen(trim($codeBrand))>0) {
-            $result = file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand);
+            $result = @file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand);
             if ($result != false) {
                 $lstArticleBrand = json_decode($result);
                 if (count($lstArticleBrand->data)>0) {
@@ -778,7 +780,7 @@ class ExtractionDataSearch implements ShouldQueue
 
     function searchArticleNotFound($codeBrand,$nameMarca){
         if (strlen(trim($codeBrand))>0) {
-            $result = file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand);
+            $result = @file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand);
             if ($result != false) {
                 $lstArticleBrand = json_decode($result);
                 if (count($lstArticleBrand->data)>0) {
