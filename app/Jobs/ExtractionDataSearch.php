@@ -51,7 +51,7 @@ class ExtractionDataSearch implements ShouldQueue
     {
 
         if ($this->extractionHeader->id > 0) {
-            // $this->processMissingBrand();
+            $this->processMissingBrand();
             $this->processMissingArticleBrand();
             $this->processMissingProvider();
             $this->processMissingCustomer();//importadores
@@ -404,7 +404,7 @@ class ExtractionDataSearch implements ShouldQueue
     }
 
     function searchArticle($codeBrand){
-        if (strlen(trim($codeBrand))>0 && $codeBrand != "821") {
+        if (strlen(trim($codeBrand))>0) {
             $result = @file_get_contents($this->urlBase .'ecommerce/getProductsByTrademark/'.$codeBrand);
             if ($result != false) {
                 $lstArticleBrand = json_decode($result);
