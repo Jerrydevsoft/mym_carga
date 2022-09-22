@@ -478,7 +478,7 @@ class ExtractionDataSearch implements ShouldQueue
                     }
                 }
             }else{
-                print_r("FALLO AL TRAER LOS ARTICULOS DE LA FILA : ".$d." -> MARCA:".$codeBrand."\n" );
+                print_r("FALLO AL TRAER LOS ARTICULOS DE LA MARCA:".$codeBrand."\n" );
             }
         }
     }
