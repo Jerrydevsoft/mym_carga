@@ -223,14 +223,16 @@ class ExtractionDataSearch implements ShouldQueue
         print_r(":::::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
         //$lstProviders = json_decode(file_get_contents($this->urlBase .'general/getProviders'));
         $lstProviders = Http::post($this->urlBase .'general/getProviders')->body();
-        $lstProviders = json_decode($lstProviders);
-        if ($lstProviders->total_registros > 0) {
-            foreach ($lstProviders->lista as $l => $lista) {
-                // print_r("fila proveedores : ".$l."\n" );
-                //if ($lista->idproveedor != "010328") { // arreglar razon social
-                    //$this->searchImporter($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false); CLIENTES
-                    $this->searchProvider($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false);
-                //}
+        if (strlen($lstProviders) > 0) {
+            $lstProviders = json_decode($lstProviders);
+            if (isset($lstProviders->total_registros) && $lstProviders->total_registros > 0) {
+                foreach ($lstProviders->lista as $l => $lista) {
+                    // print_r("fila proveedores : ".$l."\n" );
+                    //if ($lista->idproveedor != "010328") { // arreglar razon social
+                        //$this->searchImporter($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false); CLIENTES
+                        $this->searchProvider($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false);
+                    //}
+                }
             }
         }
 
