@@ -75,12 +75,12 @@
         </div>
 
         <div class="modal fade" id="modal-result" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog-lg" style="width:800px; margin: auto;">
+            <div class="modal-dialog modal-result">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">RESULTADO DE BUSQUEDA HASTA EL MOMENTO</h4>
-                        <button type="button" class="close" onclick="extraction_closeModal('modal-result');" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -113,6 +113,9 @@
                             </div>
                           </div>
                         </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div> 
