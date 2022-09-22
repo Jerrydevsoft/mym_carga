@@ -532,7 +532,7 @@ class ExtractionDataSearch implements ShouldQueue
         $status_founded=false;
         foreach ($listFounded as $lst => $found) {
             //print_r("caracter anterior: ".$found->CARACTER_ANTERIOR." - validacion:  ".ctype_alpha($found->CARACTER_ANTERIOR)."\n" );
-            if(!ctype_alpha($found->CARACTER_ANTERIOR)){
+            if(!ctype_alpha($found->CARACTER_ANTERIOR) && $is_partial){
                 switch($article_to_search){
                     case (strtoupper(trim($found->FINAL_ESPACIO)) == $article_to_search):
                         $status_founded=true;
@@ -559,16 +559,12 @@ class ExtractionDataSearch implements ShouldQueue
                 }
 
                 if ($status_founded) {
-                    if ($is_partial) {
-                        // print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO PARCIAL:".$article_ini."\n" );
-                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
+                    DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
                         $result = false;
-                    }else{
-                        // print_r("CAMBIAMOS ESTADO DE ARTICULO A BUSCAR: ".$article_to_search." Y EL ARTICULO COMPLETO:".$article_ini."\n" );
-                        DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'FOUNDED','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-success'));
-                        $result = true;
-                    }
                 }
+            }else{
+                DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'FOUNDED','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-success'));
+                $result = true;
             }
         }
         return $result;
