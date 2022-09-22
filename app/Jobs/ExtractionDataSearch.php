@@ -175,7 +175,7 @@ class ExtractionDataSearch implements ShouldQueue
                 //var_dump($data[0]['customer_code']);
                 die;
                 */
-                print_r("fila customer: ".$c." documento: ".$customer->customer."\n" );
+                // print_r("fila customer: ".$c." documento: ".$customer->customer."\n" );
                 $result =file_get_contents($this->urlBase .'customers/getCustomerByIdentification/'.$customer->customer);
                 if ($result != false) {
                     $objCustomer = json_decode($result);
@@ -224,7 +224,7 @@ class ExtractionDataSearch implements ShouldQueue
         $lstProviders = json_decode($lstProviders);
         if ($lstProviders->total_registros > 0) {
             foreach ($lstProviders->lista as $l => $lista) {
-                print_r("fila proveedores : ".$l."\n" );
+                // print_r("fila proveedores : ".$l."\n" );
                 //if ($lista->idproveedor != "010328") { // arreglar razon social
                     //$this->searchImporter($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false); CLIENTES
                     $this->searchProvider($lista->idproveedor,trim($lista->razonsocial),trim($lista->razonsocial),false);
