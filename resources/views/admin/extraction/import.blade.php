@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button class="form-control btn btn-success" id="btnSubmit" type="submit" role="submit">Procesar</button>
+                        <button class="form-control btn btn-primary" id="btnSubmit" type="submit" role="submit">Procesar</button>
                     </div>
                 </div>
                 </form>

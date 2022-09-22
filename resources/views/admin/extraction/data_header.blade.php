@@ -9,27 +9,6 @@
 @section('content')
         <div class="card">
             <div class="card-header">
-                Filtro de Busqueda
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <input class="form-control" type="text" id="searchDescription" name="searchDescription" value="" placeholder="Buscar por descripcion">
-                    </div>
-                    <div class="col-md-4">
-                        &nbsp;
-                    </div>
-                    <div class="col-md-4">
-                        <select id="searchStatus" name="searchStatus" class="form-control">
-                            <option value="CARGA_INICIAL">CARGA_INICIAL</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br>
-        <div class="card">
-            <div class="card-header">
                 <h3>Listado</h3>
             </div>
             <div class="card-body">
