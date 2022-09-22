@@ -197,22 +197,22 @@
                                                 //$(td +' .tabledit-span').addClass('badge bg-success');
                                                 //$(td).css('margin', 'auto');
                                                 //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-success" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-success" style="background-color: #28a745 !important;color:#ffffff;">'+item.estado+'</span></div>';
                                                 break;
                                             case 'NOT_FOUND':
-                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-danger" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-danger" style="font-color: #ec0404 !important;color:#ffffff;">'+item.estado+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-danger');
                                                 //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'red');
                                                 break;
                                             case 'PARTIAL_FOUND':
-                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-warning" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-warning" style="background-color: #e7af3f !important;color:#ffffff;">'+item.estado+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-warning');
                                                 //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'green');
                                                 break;
                                             default:
-                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-primary" style="background-color: #28a745 !important;">'+item.estado+'</span></div>';
+                                                htmlHeader += '<div class="col-md-4"><span class="badge bg-primary" style="background-color: #49a9df !important;color:#ffffff;">'+item.estado+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-primary');
                                                 //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'light-blue');
@@ -238,22 +238,22 @@
                                                 //$(td +' .tabledit-span').addClass('badge bg-success');
                                                 //$(td).css('margin', 'auto');
                                                 //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-success" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-success" style="background-color: #28a745 !important; color:#ffffff;">'+fila.estado_articulo+'</span></div>';
                                                 break;
                                             case 'NOT_FOUND':
-                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-danger" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-danger" style="background-color: #ec0404 !important; color:#ffffff;">'+fila.estado_articulo+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-danger');
                                                 //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'red');
                                                 break;
                                             case 'PARTIAL_FOUND':
-                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-warning" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-warning" style="background-color: #e7af3f !important; color:#ffffff;">'+fila.estado_articulo+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-warning');
                                                 //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'green');
                                                 break;
                                             default:
-                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-primary" style="background-color: #28a745 !important;">'+fila.estado_articulo+'</span></div>';
+                                                htmlDetail += '<div class="col-md-3"><span class="badge bg-primary" style="background-color: #49a9df !important; color:#ffffff;">'+fila.estado_articulo+'</span></div>';
                                                 //$(td +' .tabledit-span').addClass('badge bg-primary');
                                                 //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 //$(td).css('background-color', 'light-blue');

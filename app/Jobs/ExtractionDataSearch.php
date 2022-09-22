@@ -51,7 +51,7 @@ class ExtractionDataSearch implements ShouldQueue
     {
 
         if ($this->extractionHeader->id > 0) {
-            $this->processMissingBrand();
+            // $this->processMissingBrand();
             $this->processMissingArticleBrand();
             $this->processMissingProvider();
             $this->processMissingCustomer();//importadores
