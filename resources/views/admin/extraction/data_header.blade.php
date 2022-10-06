@@ -22,31 +22,13 @@
                                 <th>TOTAL ENCONTRADOS</th>
                                 <th>TOTAL NO ENCONTRADOS</th>
                                 <th>ESTADO</th>
-                                <th>FECHA DE REGISTRO</th>
+                                <th>INICIO</th>
+                                <th>FINALIZO</th>
                                 <th>RESPONSABLE</th>
                                 <th>ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @if (!is_null($registros))
-                            @foreach($registros as $registro)
-                                <tr>
-                                    <td>{{ $registro->id }}</td>
-                                    <td>{{ $registro->description }}</td>
-                                    <td>{{ $registro->totalRegister }}</td>
-                                    <td>{{ $registro->totalFound }}</td>
-                                    <td>{{ $registro->totalMissing }}</td>
-                                    <td>{{ $registro->status }}</td>
-                                    <td>{{ $registro->fecha_creacion }}</td>
-                                    <td>{{ $registro->usrCreated }}</td>
-                                    <td>
-                                        <a href="{{ route('extraccion.data.revision', ['idHeader' => $registro->id])  }}" title="revisar"><i class="fas fa-edit" ></i></a>&nbsp;&nbsp;
-                                        <a href="javascript:void(0);" onclick="repeatProcess({{$registro->id}})" style="display: none;"><i class="fas fa-microchip"></i></a>
-                                        <a href="javascript:void(0);" onclick="extraction_showResultExtraction({{$registro->id}})" title="Ver resultado"><i class="fas fa-chart-line"></i></a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endif
                         </tbody>
                     </table>
                 </div>
@@ -121,7 +103,14 @@
 @section('js')
     <script>
     $(document).ready(function(){
-        $("#tableHeader").DataTable();
+//         $('#tableHeader').dataTable( {
+//     paging: false,
+//     searching: false,
+//     "bDestroy": true
+// } );
+        $('#tableHeader').DataTable();
+        extraction_getChargeHeaders();
+        setInterval(extraction_getChargeHeaders,60000);//se llamara a la funcion cada minuto.
     });
 
     function repeatProcess(idHeader){
@@ -147,6 +136,48 @@
 
     function extraction_closeModal(id){
         $("#"+ id).modal('hide');
+    }
+
+    function extraction_getChargeHeaders(){
+        $.ajax(
+                {
+                    url: "{{ route('extraccion.data.list') }}",
+                    type: 'POST',
+                    data:{
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    dataType:'json',
+                    success: function(result){
+                        console.log(result);
+                        if (result.status == 200) {
+                            console.log(result.status);
+                            html = '';
+                            $.each( result.data, function(i,item ) {
+                                // console.log(item);
+                                html+='<tr>';
+                                html+='<td>' + item.id + '</td>';
+                                html+='<td>' + item.description + '</td>';
+                                html+='<td>' + item.totalRegister + '</td>';
+                                html+='<td>' + item.totalFound + '</td>';
+                                html+='<td>' + item.totalMissing + '</td>';
+                                html+='<td>' + item.status + '</td>';
+                                html+='<td>' + item.fecha_creacion + '</td>';
+                                html+='<td>' + item.fecha_modificacion + '</td>';
+                                html+='<td>' + item.usrCreated + '</td>';
+                                html+='<td>';
+                                let ruta = "{{ route('extraccion.data.revision', ['idHeader'=>':id'])  }}";
+                                ruta = ruta.replace(':id', item.id);
+                                html+='<a href="'+ruta+'" title="revisar"><i class="fas fa-edit" ></i></a>&nbsp;&nbsp;';
+                                html+='<a href="javascript:void(0);" onclick="repeatProcess('+item.id+')" style="display: none;"><i class="fas fa-microchip"></i></a>';
+                                html+='<a href="javascript:void(0);" onclick="extraction_showResultExtraction('+item.id+')" title="Ver resultado"><i class="fas fa-chart-line"></i></a>';
+                                html+='</td>';
+                                html+='</tr>';
+                            });
+                            $("#tableHeader > tbody").html(html);
+                        }
+                        $("#tableHeader").DataTable();
+                        // extraction_datatable();
+                }});
     }
 
     function extraction_showResultExtraction(idHeader){
@@ -250,6 +281,23 @@
                         }
                 }});
         }
+    }
+
+    function extraction_datatable(){
+        $('#tableHeader').DataTable().clear();
+        $('#tableHeader').DataTable().destroy();
+        var table =  $('#tableHeader').DataTable( {
+                    columnDefs: [
+                        {
+                            targets: [ 0, 1, 2 ],
+                            className: 'mdl-data-table__cell--non-numeric'
+                        }
+                    ],
+                    // "bDestroy": true
+                } );
+                // table.reload();
+                $( table.table().container() ).removeClass( 'form-inline' );
+                // table.draw();
     }
     </script>
 @stop

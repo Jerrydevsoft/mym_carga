@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\ExtractionHeaderModel;
 use App\Models\Admin\ExtractionModel;
 use App\Models\Admin\ExtractionReportModel;
+use App\Models\Admin\ExtractionBrandModel;
+use App\Models\Admin\ExtractionArticlesModel;
 use Illuminate\Support\Facades\Validator;
 use App\Jobs\ExtractionDataSearch;
 use App\Jobs\UpdateCountries;
 use App\Imports\ExtractionImport;
+use App\Imports\BrandsImport;
+use App\Imports\ArticlesBrandImport;
 use App\Exports\ExtractionReportExport;
 use App\Exports\ExtractionReportGeneralExport;
 use Illuminate\Http\Request;
@@ -88,9 +92,17 @@ class ExtractionController extends Controller
     }
 
     /* ::: listamos todas las cargas que se realizaron :::: */
+    public function showChargeHeader(){
+        return view('admin.extraction.data_header');
+    }
+
     public function getListChargeHeader(){
-        $registros = ExtractionHeaderModel::selectRaw('*,FROM_UNIXTIME(datetimecreated) as fecha_creacion')->get()->sortByDesc('id');
-        return view('admin.extraction.data_header', compact('registros'));
+        $headers = ExtractionHeaderModel::selectRaw('*,FROM_UNIXTIME(datetimecreated) as fecha_creacion,FROM_UNIXTIME(datetimemodified) as fecha_modificacion')->get()->sortByDesc('id');
+        $response = [
+            'status' => 200,
+            'data' => $headers
+        ];
+        return json_encode($response);
     }
 
     /* ::: obtenemos el detalle de la carga ::: */
@@ -251,7 +263,8 @@ class ExtractionController extends Controller
                "status"                         => $detalle->status,
                'statusImporter'                 => $detalle->statusImporter,
                'statusProvider'                 => $detalle->statusProvider,
-               'statusArticle'                  => $detalle->statusArticle
+               'statusArticle'                  => $detalle->statusArticle,
+               "accion"                         => "editar"
            );
         }
 
@@ -430,5 +443,118 @@ class ExtractionController extends Controller
             'dataDetail' => $dataDetail
         ];
         return json_encode($result);
+    }
+
+    function showBrands(){
+        $form_save = '/register';
+        return view('admin.extraction.list_brand', compact('form_save','form_save'));
+    }
+
+    function getListBrands(){
+        $brands = ExtractionBrandModel::select('*')->get();
+        $response = [
+            'status' => 200,
+            'data' => $brands
+        ];
+        return json_encode($response);
+    }
+
+    function editBrandById(Request $request){
+        $id = $request->get('id');
+        $status = $request->get('status');
+        $data = array(
+            'status'   => $status,
+        );
+
+        ExtractionBrandModel::where('id', $id)
+                ->update($data);
+
+        $response = [
+            'status' => 200
+        ];
+        return json_encode($response);
+    }
+
+    public function importBrandData(Request $request){
+        set_time_limit(-1);
+        ini_set('memory_limit', '4096M');
+        ini_set('opcache.enable', '0');
+        // $responsable = $request->input('responsable');
+        $userId = Auth::id();
+        $user = User::find($userId);
+        if (is_object($user)) {
+            $responsable = $user->name;
+        }
+        $idHeader = 0;
+
+        if ($request->file('excelin')) {
+            ExtractionBrandModel::where('id','>',0)
+            ->update(
+                [
+                    'is_active' => 1,
+                    'is_deleted' => 0,
+                    'status' => 0
+                ]);
+            $response = Excel::import(new BrandsImport($responsable), request()->file('excelin')->store('temp'));
+            $status = 200;
+        }else{
+            $status = 500;
+            // return redirect()->to(url('extraccion/import'))->with('error',"Hubo problemas con el archivo");
+        }
+
+        $response = [
+            'status' => 200,
+            'data' => $responsable
+        ];
+        return json_encode($response);
+    }
+
+    function showArticlesByBrand($idBrand){
+        return view('admin.extraction.list_brand_article', compact('idBrand','idBrand'));
+    }
+
+    function getListArticlesByBrandId(Request $request){
+        $idBrand = $request->get('idBrand');
+        $articles = ExtractionArticlesModel::select('*')->where('brandId',$idBrand)->where('is_active',1)->get();
+        $response = [
+            'status' => 200,
+            'data' => $articles
+        ];
+        return json_encode($response);
+    }
+
+    function importArticleBrandData(Request $request){
+        set_time_limit(-1);
+        ini_set('memory_limit', '4096M');
+        ini_set('opcache.enable', '0');
+        // $responsable = $request->input('responsable');
+        $idBrand = $request->get('idBrand');
+        $userId = Auth::id();
+        $user = User::find($userId);
+        if (is_object($user)) {
+            $responsable = $user->name;
+        }
+        $idHeader = 0;
+
+        if ($request->file('excelin') && $brandId > 0) {
+            ExtractionBrandModel::where('id','>',0)
+            ->update(
+                [
+                    'is_active' => 1,
+                    'is_deleted' => 0,
+                    'status' => 0
+                ]);
+            $response = Excel::import(new ArticlesBrandImport($responsable,$idBrand), request()->file('excelin')->store('temp'));
+            $status = 200;
+        }else{
+            $status = 500;
+            // return redirect()->to(url('extraccion/import'))->with('error',"Hubo problemas con el archivo");
+        }
+
+        $response = [
+            'status' => 200,
+            'data' => $responsable
+        ];
+        return json_encode($response);
     }
 }

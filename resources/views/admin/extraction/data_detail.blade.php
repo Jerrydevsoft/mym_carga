@@ -22,8 +22,9 @@
                         </ul>
                     </div>
                     <br>
-                    <div class="col-md-12 table-responsive" style="height: 800px;">
-                        <table class="display table table-striped table-hover" id="tableDetail" style="width:100%">
+                    <div class="col-md-12 table-responsive">
+                        {{-- <table class="display table table-striped table-hover" id="tableDetail" style="width:100%"> --}}
+                        <table class="display table table-striped table-hover nowrap" id="tableDetail" style="width:100%">
                             <thead>
                                 <tr>
 {{--
@@ -104,6 +105,11 @@
 
         }
 
+        /* div.dataTables_wrapper {
+            width: 800px;
+            margin: 0 auto;
+        } */
+
     </style>
 @stop
 
@@ -124,25 +130,30 @@
                     html += '<div class="col-12">' + title +'</div>';
                     html += '<div class="col-12"><input type="text" placeholder="Search ' + title + '" /></div>';
                     html += '</div>';
-                $(this).html(html);
+                
                 // if (column == 24) { //ultima fila
-                //     var html2 = '<div class="row">';
-                //     html2 += '<div class="col-12">ACCIONES</div>';
-                //     html2 += '</div>';
-                //     $(this).html(html2);
+                //     var html = '<div class="row">';
+                //         html += '<div class="col-12">ACCIONES</div>';
+                //         html += '</div>';
 
                 // }
+                $(this).html(html);
             } );
+            
             var table = $('#tableDetail').DataTable({
                             "pageLength": 100,
                             "lengthMenu": [ 100, 250, 500],
                             fixedHeader: {
                                 header: true,
-                                footer: true
+                                //footer: true
                             },
+                            "processing" : true,
+                            "serverSide" : true,
                             //"searching": false,
                             //"bFilter": false,
-                            scrollY: 500,
+                            // autoWidth: true,
+                            scrollTop: true,
+                            scrollY: 400,
                             scrollX: true,
                             processing: true,
                             serverSide: true,
@@ -366,7 +377,8 @@
                                     }
                                 },
                                 { data: 'marca', name: 'marca',searchable: true, orderable: false },
-                                { data: 'nameMarca', name: 'nameMarca',searchable: true, orderable: false }
+                                { data: 'nameMarca', name: 'nameMarca',searchable: true, orderable: false },
+                                // { data: 'accion', name: 'accion',searchable: false, orderable: false }
                             ],/*
                             "columnDefs":[
                                 {
@@ -450,6 +462,7 @@
                         }
                     });
                 } );
+            // $('.dataTables_scrollHeadInner table thead tr').append('<th>ACCION</th>');
 
 
             $('#tableDetail').on('draw.dt', function(){
@@ -546,6 +559,8 @@
 
                 });
             });
+            // $('div.dataTables_scrollBody').scrollTop(0);
+            // $('.dataTables_scrollHead').attr('style','overflow: auto; position: relative; border: 0px; width: 100%;');
         }
     </script>
 @stop
