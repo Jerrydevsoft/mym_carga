@@ -97,7 +97,7 @@ class ExtractionController extends Controller
     }
 
     public function getListChargeHeader(){
-        $headers = ExtractionHeaderModel::selectRaw('*,FROM_UNIXTIME(datetimecreated) as fecha_creacion,FROM_UNIXTIME(datetimemodified) as fecha_modificacion')->get()->sortByDesc('id');
+        $headers = ExtractionHeaderModel::selectRaw('*,FROM_UNIXTIME(datetimecreated) as fecha_creacion,FROM_UNIXTIME(datetimemodified) as fecha_modificacion')->orderBy('id','desc')->get();
         $response = [
             'status' => 200,
             'data' => $headers
