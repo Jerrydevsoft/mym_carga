@@ -18,7 +18,7 @@
                     </div>
                     <div class="col-md-12 table-responsive" style="height: 800px;">
                         <table class="display table table-striped table-hover" style="width:100%" id="tableUsers">
-                            <thead>
+                            <thead style="background-color:#335485;color:#fff;">
                                 <tr>
                                     <th>ID</th>
                                     <th>NOMBRE Y APELLIDO</th>

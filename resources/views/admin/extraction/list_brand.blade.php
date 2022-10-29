@@ -40,7 +40,7 @@
                 <div class="row" style="width: 100%">
                     <div class="col-md-12" style="height: 800px;">
                         <table class="table table-hover" id="tableBrands">
-                            <thead>
+                            <thead style="background-color:#335485;color:#fff;">
                                 <tr>
                                     <th>ID</th>
                                     <th>CODIGO</th>
@@ -164,7 +164,7 @@
                             $("#tableBrands > tbody").html(html);
                         }
                         $('#tableBrands').DataTable();
-                        $(".dataTables_wrapper").removeClass( 'form-inline' );d
+                        $(".dataTables_wrapper").removeClass( 'form-inline' );
                         // brand_datatable();
                 }});
     }

@@ -132,7 +132,8 @@ return [
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
-    'classes_topnav_container' => 'container',
+    'classes_topnav_bg' => 'navbar-light',
+    'classes_topnav_container' => 'container ',
 
     /*
     |--------------------------------------------------------------------------

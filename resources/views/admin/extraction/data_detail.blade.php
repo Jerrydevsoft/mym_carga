@@ -22,9 +22,9 @@
                         </ul>
                     </div>
                     <br>
-                    <div class="col-md-12 table-responsive">
+                    <div class="col-md-12">
                         {{-- <table class="display table table-striped table-hover" id="tableDetail" style="width:100%"> --}}
-                        <table class="display table table-striped table-hover nowrap" id="tableDetail" style="width:100%">
+                        <table class="display table table-striped table-hover nowrap" id="tableDetail">
                             <thead>
                                 <tr>
 {{--
@@ -147,12 +147,10 @@
                                 header: true,
                                 //footer: true
                             },
-                            "processing" : true,
-                            "serverSide" : true,
                             //"searching": false,
                             //"bFilter": false,
                             // autoWidth: true,
-                            scrollTop: true,
+                            // scrollTop: true,
                             scrollY: 400,
                             scrollX: true,
                             processing: true,
@@ -167,38 +165,41 @@
 
                             },
                             'order': [],
+                            fields:[
+                                {label: "id", name: "id", type: "readonly"},
+                                {label: "dua", name: "dua", type: "text"},
+                                {label: "fecha", name: "fecha",type: 'datetime'},
+                                {label: "statusImporter", name: "statusImporter", type: "text"},
+                                {label: "codImporter", name: "codImporter", type: "text"},
+                                {label: "importador", name: "importador", type: "text"},
+                                {label: "statusProvider", name: "statusProvider", type: "text"},
+                                {label: "codProvider", name: "codProvider", type: "text"},
+                                {label: "embarcadorExportador", name: "embarcadorExportador", type: "text"},
+                                {label: "qty2", name: "qty2", type: "text"},
+                                {label: "und2", name: "und2", type: "text"},
+                                {label: "fobTotal", name: "fobTotal", type: "text"},
+                                {label: "fobUnd2", name: "fobUnd2", type: "text"},
+                                {label: "codPaisOrigen", name: "codPaisOrigen", type: "text"},
+                                {label: "paisOrigen", name: "paisOrigen", type: "text"},
+                                {label: "codPaisCompra", name: "codPaisCompra", type: "text"},
+                                {label: "paisCompra", name: "paisCompra", type: "text"},
+                                {label: "puertoEmbarque", name: "puertoEmbarque", type: "text"},
+                                {label: "descripcionComercial", name: "descripcionComercial", type: "text"},
+                                {label: "statusArticle", name: "statusArticle", type: "text"},
+                                {label: "codigo", name: "codigo", type: "text"},
+                                {label: "status", name: "status", type: "text"},
+                                {label: "marca", name: "marca", type: "text"}
+                            ],
                             columns: [
-                                // { data: 'id', name: 'id',searchable: true },
-                                // { data: 'dua', name: 'dua',searchable: true },
-                                // { data: 'fecha', name: 'fecha',searchable: true },
-                                // { data: 'eta', name: 'eta',searchable: true },
-                                // { data: 'importador', name: 'importador',searchable: true },
-                                // { data: 'embarcadorExportador', name: 'embarcadorExportador',searchable: true },
-                                // { data: 'pesoBruto', name: 'pesoBruto',searchable: true },
-                                // { data: 'pesoNeto', name: 'pesoNeto',searchable: true },
-                                // { data: 'qty1', name: 'qty1',searchable: true },
-                                // { data: 'und2', name: 'und2',searchable: true },
-                                // { data: 'qty2', name: 'qty2',searchable: true },
-                                // { data: 'und2', name: 'und2',searchable: true },
-                                // { data: 'fobTotal', name: 'fobTotal',searchable: true },
-                                // { data: 'fobUnd1', name: 'fobUnd1',searchable: true },
-                                // { data: 'fobUnd2', name: 'fobUnd2',searchable: true },
-                                // { data: 'codPaisOrigen', name: 'codPaisOrigen',searchable: true },
-                                // { data: 'paisOrigen', name: 'paisOrigen',searchable: true },
-                                // { data: 'codPaisCompra', name: 'codPaisCompra',searchable: true },
-                                // { data: 'paisCompra', name: 'paisCompra',searchable: true },
-                                // { data: 'puertoEmbarque', name: 'puertoEmbarque',searchable: true },
-                                // { data: 'agenteAduanero', name: 'agenteAduanero',searchable: true },
-                                // { data: 'estado', name: 'estado',searchable: true },
-                                // { data: 'descripcionComercial', name: 'descripcionComercial',searchable: true },
-                                // { data: 'marca', name: 'marca',searchable: true },
-                                // { data: 'nameMarca', name: 'nameMarca',searchable: true },
-                                // { data: 'codigo', name: 'codigo',searchable: true },
-                                // { data: 'status', name: 'status',searchable: true }
-
                                 { data: 'id', name: 'id',searchable: true, orderable: false },
                                 { data: 'dua', name: 'dua',searchable: true, orderable: false },
-                                { data: 'fecha', name: 'fecha',searchable: true, orderable: false },
+                                { data: 'fecha',type: 'datetime', name: 'fecha',searchable: true,orderable: false
+                                    // createdCell: function (td, cellData, rowData, row, col) {
+                                    //     if (rowData.fecha != ''){
+
+                                    //     }
+                                    // }
+                                },
                                 { data: 'statusImporter', name: 'statusImporter',searchable: true, orderable: false,
 
                                     createdCell: function (td, cellData, rowData, row, col) {
@@ -233,31 +234,6 @@
                                                 break;
                                         }
                                     }
-
-                                    /*
-                                    render: function ( data, type, row ) {
-                                        console.log(data);
-                                        console.log(type);
-                                        console.log(row);
-                                        let html = "";
-                                        switch (row.statusImporter) {
-                                            case 'FOUNDED':
-                                                html = "<span class='badge bg-success'>"+data+"</span>";
-                                                break;
-                                            case 'NOT FOUND':
-                                                html = "<span class='badge bg-danger'>"+data+"</span>";
-                                                break;
-                                            case 'PARTIAL_FOUND':
-                                                html = "<span class='badge bg-warning'>"+data+"</span>";
-                                                break;
-                                            default:
-                                                html = "<span class='badge bg-primary'>"+data+"</span>";
-                                                break;
-                                        }
-                                        return html;
-                                    }
-                                    */
-
                                 },
                                 { data: 'codImporter', name: 'codImporter',searchable: true , orderable: false},
                                 { data: 'importador', name: 'importador',searchable: true, orderable: false },
@@ -266,31 +242,18 @@
                                         switch (rowData.statusProvider) {
                                             case 'FOUNDED':
                                                 $(td).css('color', '#28a745');
-                                                $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-success');
-                                                //$(td).css('margin', 'auto');
-                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                break;
+                                                $(td).css('font-weight', 'bold');break;
                                             case 'NOT_FOUND':
                                                 $(td).css('color', '#ec0404');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
-                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'red');
                                                 break;
                                             case 'PARTIAL_FOUND':
                                                 $(td).css('color', '#e7af3f');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
-                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'green');
                                                 break;
                                             default:
                                                 $(td).css('color', '#49a9df');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
-                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'light-blue');
                                                 break;
                                         }
                                     }
@@ -313,30 +276,18 @@
                                             case 'FOUNDED':
                                                 $(td).css('color', '#28a745');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-success');
-                                                //$(td).css('margin', 'auto');
-                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 break;
                                             case 'NOT_FOUND':
                                                 $(td).css('color', '#ec0404');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
-                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'red');
                                                 break;
                                             case 'PARTIAL_FOUND':
                                                 $(td).css('color', '#e7af3f');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
-                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'green');
                                                 break;
                                             default:
                                                 $(td).css('color', '#49a9df');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
-                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'light-blue');
                                                 break;
                                         }
                                     }
@@ -348,89 +299,26 @@
                                             case 'FOUNDED':
                                                 $(td).css('color', '#28a745');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-success');
-                                                //$(td).css('margin', 'auto');
-                                                //$(td).html("<span class='badge bg-success' style='background-color: #28a745 !important;'>"+cellData+"</span>")
                                                 break;
                                             case 'NOT_FOUND':
                                                 $(td).css('color', '#ec0404');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-danger');
-                                                //$(td).html("<span class='badge bg-danger' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'red');
                                                 break;
                                             case 'PARTIAL_FOUND':
                                                 $(td).css('color', '#e7af3f');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-warning');
-                                                //$(td).append("<span class='badge bg-warning' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'green');
                                                 break;
                                             default:
                                                 $(td).css('color', '#49a9df');
                                                 $(td).css('font-weight', 'bold');
-                                                //$(td +' .tabledit-span').addClass('badge bg-primary');
-                                                //$(td).append("<span class='badge bg-primary' style='background-color: #28a745 !important;'>"+cellData+"</span>")
-                                                //$(td).css('background-color', 'light-blue');
                                                 break;
                                         }
                                     }
                                 },
                                 { data: 'marca', name: 'marca',searchable: true, orderable: false },
-                                { data: 'nameMarca', name: 'nameMarca',searchable: true, orderable: false },
+                                { data: 'nameMarca', name: 'nameMarca',searchable: true, orderable: false }
                                 // { data: 'accion', name: 'accion',searchable: false, orderable: false }
-                            ],/*
-                            "columnDefs":[
-                                {
-                                    "targets":3,
-                                    "sortable":false,
-                                    "render": function(data,type,full,meta){
-                                        console.log(data);
-                                        console.log(type);
-                                        console.log(full);
-                                        console.log(meta);
-                                        let htmlImporter = "";
-                                        switch (full.statusImporter) {
-                                            case 'FOUNDED':
-                                                htmlImporter = "<span class='badge bg-success'>"+full.statusImporter+"</span>";
-                                                break;
-                                            case 'NOT FOUND':
-                                                htmlImporter = "<span class='badge bg-danger'>"+full.statusImporter+"</span>";
-                                                break;
-                                            case 'PARTIAL_FOUND':
-                                                htmlImporter = "<span class='badge bg-warning'>"+full.statusImporter+"</span>";
-                                                break;
-                                            default:
-                                                htmlImporter = "<span class='badge bg-primary'>"+full.statusImporter+"</span>";
-                                                break;
-                                        }
-                                        return htmlImporter;
-                                    }
-                                },
-                                {
-                                    "targets":5,
-                                    "sortable":false,
-                                    "render": function(data,type,full,meta){
-                                        let htmlProvider = "";
-                                        switch (full.statusProvider) {
-                                            case 'FOUNDED':
-                                                htmlProvider = "<span class='badge bg-success'>"+full.statusProvider+"</span>";
-                                                break;
-                                            case 'NOT FOUND':
-                                                htmlProvider = "<span class='badge bg-danger'>"+full.statusProvider+"</span>";
-                                                break;
-                                            case 'PARTIAL_FOUND':
-                                                htmlProvider = "<span class='badge bg-warning'>"+full.statusProvider+"</span>";
-                                                break;
-                                            default:
-                                                htmlProvider = "<span class='badge bg-primary'>"+full.statusProvider+"</span>";
-                                                break;
-                                        }
-                                        return htmlProvider;
-                                    }
-                                },
-
-                            ],*/
+                            ],         
                             "select": {
                                 style:    'os',
                                 selector: 'td:first-child'
@@ -451,7 +339,6 @@
                                     });
                             }
                         });
-
             table.columns().eq( 0 ).each( function ( colIdx ) {
                 $( 'input', table.column( colIdx ).header() ).on( 'keyup change', function () {
                         if (this.value.length > 2 || this.value.length == 0) {
@@ -462,6 +349,7 @@
                         }
                     });
                 } );
+            $( table.table().container() ).removeClass( 'form-inline' );
             // $('.dataTables_scrollHeadInner table thead tr').append('<th>ACCION</th>');
 
 
@@ -546,7 +434,7 @@
                         action: 'restore'
                     }
                 },
-                restoreButton:false,
+                restoreButton:true,
                 onSuccess:function(data, textStatus, jqXHR)
                 {
                     console.log(data);

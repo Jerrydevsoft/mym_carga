@@ -40,8 +40,8 @@
                 <br>
                 <div class="row" style="width: 100%">
                     <div class="col-md-12 table-responsive" style="height: 800px;">
-                        <table class="display table table-striped table-hover" style="width:100%" id="tableBrands">
-                            <thead>
+                        <table class="display table table-striped table-hover" style="width:100%;" id="tableBrands">
+                            <thead style="background-color:#335485;color:#fff;">
                                 <tr>
                                     <th>ID</th>
                                     <th>FACTORY_CODE</th>
@@ -80,6 +80,40 @@
     <script>
     $(document).ready(function(){
         article_getListArticles();
+        $("#formArticleBrand").submit(function (e) {
+            //stop submitting the form to see the disabled button effect
+            e.preventDefault();
+            //disable the submit button
+            $("#btnSubmit").attr("disabled", true);
+            //disable a normal button
+            // $("#btnTest").attr("disabled", true);
+            var myform = document.getElementById("formArticleBrand");
+            let formData = new FormData(myform);
+            $.ajax({
+                url: "{{ route('extraccion.importArticleBrandData') }}",
+                data: formData,
+                async:true,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                dataType:'json',
+                beforeSend:function(){
+                    Swal.showLoading();
+                },
+                success: function (response) {
+                   if (response.status == 200) {
+                        article_getListArticles();
+                        Swal.close();
+                   }else{
+                        Swal.close();
+                   }
+                },
+                error:function(objXMLHttpRequest){
+                    console.log(objXMLHttpRequest);
+                }
+            });
+        });
 
     });
 
@@ -108,7 +142,9 @@
                             });
                             $("#tableBrands > tbody").html(html);
                         }
-                        article_datatable();
+                        $('#tableBrands').DataTable();
+                        $(".dataTables_wrapper").removeClass( 'form-inline' );
+                        // article_datatable();
                 }});
     }
 

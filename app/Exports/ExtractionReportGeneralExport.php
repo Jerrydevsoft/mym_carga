@@ -22,7 +22,7 @@ class ExtractionReportGeneralExport implements FromCollection,WithMapping,WithHe
         // return ExtractionReportModel::select("id", "partidaAduanera", "aduana", "dua", "fecha", "eta", "numManifiesto", "codTributario", "codImporter","importador", "codProvider","embarcadorExportador", "pesoBruto", "pesoNeto", "qty1", "und1", "qty2", "und2", "fobTotal", "fobUnd1", "fobUnd2", "codPaisOrigen","paisOrigen","codPaisCompra","paisCompra", "puertoEmbarque", "agenteAduanero", "estado", "descripcionComercial", "descripcion1", "descripcion2", "descripcion3", "descripcion4", "descripcion5", "nameMarca", "codigo", "opcional1", "opcional2", "opcional3", "opcional4", "opcional5")
         // ->where('extractionHeaderId',$this->idHeader)
         // ->get();
-        return ExtractionReportModel::selectRaw("id,partidaAduanera,aduana,dua,DATE_FORMAT(fecha,'%d/%m/%Y') AS fecha,DATE_FORMAT(eta,'%d/%m/%Y') AS eta,numManifiesto,codTributario,codImporter,importador,codProvider,embarcadorExportador,pesoBruto,pesoNeto,qty1,und1,qty2,und2,fobTotal,fobUnd1,fobUnd2,codPaisOrigen,paisOrigen,codPaisCompra,paisCompra,puertoEmbarque,agenteAduanero,estado,descripcionComercial,descripcion1,descripcion2,descripcion3,descripcion4,descripcion5,nameMarca,codigo,status,statusImporter,statusProvider,statusArticle")
+        return ExtractionReportModel::selectRaw("id,partidaAduanera,aduana,dua,DATE_FORMAT(fecha,'%d/%m/%Y') AS fecha,DATE_FORMAT(eta,'%d/%m/%Y') AS eta,numManifiesto,codTributario,codImporter,importador,codProvider,embarcadorExportador,pesoBruto,pesoNeto,qty1,und1,qty2,und2,fobTotal,fobUnd1,fobUnd2,codPaisOrigen,paisOrigen,codPaisCompra,paisCompra,puertoEmbarque,agenteAduanero,estado,descripcionComercial,descripcion1,descripcion2,descripcion3,descripcion4,descripcion5,nameMarca,codigo,status,statusImporter,statusProvider,statusArticle,marca")
         ->where('extractionHeaderId',$this->idHeader)
         ->where ('isActive',1)
         ->where('isDeleted',0)
@@ -31,7 +31,7 @@ class ExtractionReportGeneralExport implements FromCollection,WithMapping,WithHe
 
     public function headings(): array
     {
-        return ['DUA','FECHA DUA', 'CODFABRICACION','IMPORTADOR','PROVEEDOR','QTY2','UND2','U$FOBTOT','U$FOBUND','PAISORIGEN','PAISCOMPRA','EMBARQUE','MARCA',"PARTIDA ADUANERA", "ADUANA", "DUA", "FECHA", "ETA", "NUM MANIFIESTO", "COD TRIBUTARIO","IMPORTADOR","ESTADO IMPORTADOR","PROVEEDOR", "ESTADO PROVEEDOR","PESO BRUTO", "PESO NETO", "QTY1", "UND1", "QTY2", "UND2", 'U$FOBTOT','U$FOBUND1', 'U$FOBUND2',"PAIS ORIGEN","PAIS COMPRA", "PUERTO EMBARQUE", "AGENTE ADUANERO", "DESCRIPCION COMERCIAL","NOMBRE MARCA","ESTADO MARCA","CODIGO","ESTADO ARTICULO"];
+        return ['DUA','FECHA DUA', 'CODFABRICACION','IMPORTADOR','PROVEEDOR','QTY2','UND2','U$FOBTOT','U$FOBUND','CODPAISORIGEN','CODPAISCOMPRA','EMBARQUE','MARCA',"PARTIDA ADUANERA", "ADUANA", "DUA", "FECHA", "ETA", "NUM MANIFIESTO", "COD TRIBUTARIO","IMPORTADOR","ESTADO IMPORTADOR","PROVEEDOR", "ESTADO PROVEEDOR","PESO BRUTO", "PESO NETO", "QTY1", "UND1", "QTY2", "UND2", 'U$FOBTOT','U$FOBUND1', 'U$FOBUND2',"PAIS ORIGEN","PAIS COMPRA", "PUERTO EMBARQUE", "AGENTE ADUANERO", "DESCRIPCION COMERCIAL","DESCRIPCION 1","DESCRIPCION 2","DESCRIPCION 3","DESCRIPCION 4","DESCRIPCION 5","NOMBRE MARCA","ESTADO MARCA","CODIGO","ESTADO ARTICULO"];
         //return ['DUA','FECHA DUA', 'CODFABRICACION','IMPORTADOR','PROVEEDOR','QTY2','UND2','U$FOBTOT','U$FOBUND','PAISORIGEN','PAISCOMPRA','EMBARQUE','MARCA'];
         // return ["ID", "PARTIDA ADUANERA", "ADUANA", "DUA", "FECHA", "ETA", "NUM MANIFIESTO", "COD TRIBUTARIO", "COD IMPORTADOR","IMPORTADOR", "COD PROVEEDOR","PROVEEDOR", "PESO BRUTO", "PESO NETO", "QTY1", "UND1", "QTY2", "UND2", 'U$FOBTOT','U$FOBUND1', 'U$FOBUND2', "COD PAIS ORIGEN","PAIS ORIGEN", "COD PAIS COMPRA","PAIS COMPRA", "PUERTO EMBARQUE", "AGENTE ADUANERO", "ESTADO", "DESCRIPCION COMERCIAL", "DESCRIPCION1", "DESCRIPCION2", "DESCRIPCION3", "DESCRIPCION4", "DESCRIPCION5", "MARCA", "CODIGO"];
     }
@@ -77,6 +77,11 @@ class ExtractionReportGeneralExport implements FromCollection,WithMapping,WithHe
             $invoice->puertoEmbarque,
             $invoice->agenteAduanero,
             $invoice->descripcionComercial,
+            $invoice->descripcion1,
+            $invoice->descripcion2,
+            $invoice->descripcion3,
+            $invoice->descripcion4,
+            $invoice->descripcion5,
             $invoice->nameMarca,
             $invoice->status,
             $invoice->codigo,

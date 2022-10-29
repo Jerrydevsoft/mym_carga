@@ -21,6 +21,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use DateTime;
 
 class ExtractionController extends Controller
 {
@@ -234,7 +236,7 @@ class ExtractionController extends Controller
            $data_arr[] = array(
                "id"                             => $detalle->id,
                "dua"                            => $detalle->dua,
-               "fecha"                          => $detalle->fecha,
+               "fecha"                          => $this->formatearFecha($detalle->fecha,'d/m/Y'),
                "eta"                            => $detalle->eta,
                "codImporter"                    => $detalle->codImporter,
                "importador"                     => $detalle->importador,
@@ -249,9 +251,9 @@ class ExtractionController extends Controller
                "fobTotal"                       => $detalle->fobTotal,
                "fobUnd1"                        => $detalle->fobUnd1,
                "fobUnd2"                        => $detalle->fobUnd2,
-               "codPaisOrigen"                  => $detalle->codPaisOrigen,
+               "codPaisOrigen"                  => $this->fillZero($detalle->codPaisOrigen),
                "paisOrigen"                     => $detalle->paisOrigen,
-               "codPaisCompra"                  => $detalle->codPaisCompra,
+               "codPaisCompra"                  => $this->fillZero($detalle->codPaisCompra),
                "paisCompra"                     => $detalle->paisCompra,
                "puertoEmbarque"                 => $detalle->puertoEmbarque,
                "agenteAduanero"                 => $detalle->agenteAduanero,
@@ -278,7 +280,7 @@ class ExtractionController extends Controller
          );
         echo json_encode($response);
     }
-
+    
     public function executeActionData(Request $request){
         $id = $request->get('id');
         $accion = $request->get('action');
@@ -321,7 +323,7 @@ class ExtractionController extends Controller
 
             $data = array(
                 'dua'                   => $request->get('dua'),
-                'fecha'                 => $request->get('fecha'),
+                'fecha'                 => $this->formatearFecha2($request->get('fecha'),'Y-m-d'),
                 'codigo'                => $request->get('codigo'),
                 'codImporter'           => $request->get('codImporter'),
                 'importador'            => $request->get('importador'),
@@ -536,8 +538,8 @@ class ExtractionController extends Controller
         }
         $idHeader = 0;
 
-        if ($request->file('excelin') && $brandId > 0) {
-            ExtractionBrandModel::where('id','>',0)
+        if ($request->file('excelin') && $idBrand > 0) {
+            ExtractionArticlesModel::where('id','>',0)
             ->update(
                 [
                     'is_active' => 1,
@@ -556,5 +558,52 @@ class ExtractionController extends Controller
             'data' => $responsable
         ];
         return json_encode($response);
+    }
+
+    function fillZero($numero){ //cant_0: unidad,decena,centena,milesima
+        $result = "";
+        if ((int)$numero > 0) {
+            if ($numero > 0 && $numero < 10) {
+                $result = "00".$numero;
+            }
+            if ($numero > 9 && $numero < 100) {
+                $result = "0".$numero;
+            }
+            if ($numero > 99 && $numero < 1000) {
+                $result = $numero;
+            }
+            if ($numero > 999 && $numero < 10000) {
+                $result = $numero;
+            }
+        }
+        return $result;
+    }
+
+    function formatearFecha($fecha,$formato){
+        $fechaTransaccion = "";
+        if (!is_null($fecha) && strlen(trim($fecha))>0) {
+           $fechaTransaccion = new Carbon($fecha);
+           $fechaTransaccion = $fechaTransaccion->format($formato);
+        //    var_dump($fechaTransaccion);die();
+           return $fechaTransaccion;
+        }
+        return $fechaTransaccion;
+    }
+
+    function formatearFecha2($fecha,$formato){
+        // date_default_timezone_set('America/Lima');
+        $fechaTransaccion = "";
+        // var_dump($fecha);
+        if (!is_null($fecha) && strlen(trim($fecha))>0) {
+            $fechaInput = Carbon::createFromFormat("d/m/Y", $fecha, 'America/Lima');
+            // $myDateTime = DateTime::createFromFormat('Y-m-d', $fecha);
+            // $fechaTransaccion2 = date('Y-m-d',strtotime($fecha));
+            // var_dump($fechaInput);
+            // $fechaTransaccion = new Carbon($fechaTransaccion2);
+            $fechaTransaccion = $fechaInput->format($formato); 
+            // var_dump($fechaTransaccion);die();
+            return $fechaTransaccion;
+        }
+        return $fechaTransaccion;
     }
 }

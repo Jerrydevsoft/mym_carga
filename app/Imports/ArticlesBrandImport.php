@@ -2,10 +2,11 @@
 
 namespace App\Imports;
 
-use App\Models\ExtractionArticlesModel;
+use App\Models\Admin\ExtractionArticlesModel;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class ArticlesBrandImport implements ToModel
+class ArticlesBrandImport implements ToModel,WithStartRow
 {
     public function __construct(string $responsable, string $brandId)
     {
@@ -31,14 +32,14 @@ class ArticlesBrandImport implements ToModel
         return ExtractionArticlesModel::updateOrCreate(
             [
                 'brandId' => $this->brandId,
-                'code' => trim($row['0'])
+                'factory_code' => trim($row['2'])
             ],
             [
-            'brandId' => $this->brandId,
+            'brandId'       => $this->brandId,
             'code'          => trim($row['0']),
             'name'          => trim($row['1']),
             'factory_code'  => trim($row['2']),
-            'status'        => 1,
+            'status'        => trim($row['3']),
             'is_active'     => 1,
             'is_deleted'    => 0
         ]);

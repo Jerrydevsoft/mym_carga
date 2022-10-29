@@ -6854,6 +6854,10 @@ button.bg-success:focus {
   background-color: #17a2b8 !important;
 }
 
+.bg-top-marco {
+  background-color: #335485 !important;
+}
+
 a.bg-info:hover, a.bg-info:focus,
 button.bg-info:hover,
 button.bg-info:focus {

@@ -8,8 +8,10 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ExtractionReportExport implements FromCollection,WithHeadings,WithMapping
+class ExtractionReportExport implements FromCollection,WithHeadings,WithMapping,WithTitle 
 {
     //WithColumnFormatting,WithMapping,
     public function __construct(int $idHeader)
@@ -112,6 +114,20 @@ class ExtractionReportExport implements FromCollection,WithHeadings,WithMapping
             }
         }
         return $result;
+    }
+
+    // public function registerEvents(): array
+    // {
+    //     return [
+    //         BeforeExport::class  => function(BeforeExport $event) {
+    //             $event->writer->name('Patrick');
+    //         }
+    //     ];
+    // }
+
+    public function title(): string
+    {
+        return 'REPUESTO';
     }
 
     // public function columnFormats(): array
