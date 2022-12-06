@@ -56,8 +56,8 @@ class ExtractionDataSearch implements ShouldQueue
             $this->processMissingProvider();
             $this->processMissingCustomer();//importadores
             $this->processMissingCountry();
+            //$this->processArticleNotFound();
             DB::table('extraction_header')->where('id', $this->extractionHeader->id)->update(array('status' => 'COMPLETE','datetimemodified' => time()));
-            // $this->processArticleNotFound();
         }
 
         //$lstProviders = DB::table("extraction_subida")->selectRaw('DISTINCT(marca) as codMarca')->where('extractionHeaderId', $this->extractionHeader->id)->get();
@@ -272,16 +272,17 @@ class ExtractionDataSearch implements ShouldQueue
                             ->groupBy('marca')
                             ->groupBy('nameMarca')->get();
         print_r("::::::::::::: TOTAL DE MARCAS : ".count($lstBrandFounded)." :::::::::::::::::"."\n" );
+        print_r(":::::::::::::::: EMPIEZA A RECORRER ".date("d-m-Y H:i:s")." :::::::::::\n" );
         if (count($lstBrandFounded)>0) {
             foreach ($lstBrandFounded as $b => $brand) {
                 //print_r("fila articulo: ".$b." - Marca: ".$brand->codMarca."\n" );
                 //if ($brand->codMarca != '001') {
-                print_r("::::::::::::: fila marca : ".$b."- MARCA:". $brand->codMarca." :::::::::::::::::"."\n" );
+                print_r("::::::::::::: fila marca : ".$b."- MARCA:". $brand->codMarca.":::::::::::::::::"."\n" );
                 $this->searchArticleNotFound($brand->codMarca,$brand->nameMarca);
                 //}
             }
         }
-
+        print_r(":::::::::::::::: FIN RECORRIDO ".date("d-m-Y H:i:s")." :::::::::::\n" );
         //actualizamos los registros que no se pudieron encontrar
     }
 
@@ -643,7 +644,7 @@ class ExtractionDataSearch implements ShouldQueue
                                     ')
                                     ->where('extractionHeaderId', $this->extractionHeader->id)
                                     // ->whereRaw('(status="CHARGED" OR status="NOT_FOUND")')
-                                    ->where('marca',$brand_code)
+                                    //->where('marca',$brand_code)
                                     // ->whereIn('statusArticle',['CHARGED','PARTIAL_FOUND'])
                                     ->whereRaw('(statusArticle="CHARGED" OR statusArticle="PARTIAL_FOUND")')
                                     ->whereRaw('UPPER(TRIM(descripcionComercial)) like "%'.strtoupper(trim($article_to_search)).'%"')
@@ -691,10 +692,31 @@ class ExtractionDataSearch implements ShouldQueue
                 }
 
                 if ($status_founded) {
-                    DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
-                        $result = false;
+                    $result = false;
+                    //$objValidate = DB::table('extraction_subida')->where('id', $id)->first();
+                    // print_r("partials brand: ".$brand_to_search."\n" );
+                    switch ($found->status) {//estado marca
+                        case 'FOUNDED':
+                            DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-warning'));
+                            break;
+                        case 'PARTIAL_FOUND':
+                            DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','codigo' => $article_ini, 'marca' => $brand_code, 'nameMarca' => $nameMarca,'status' =>'PARTIAL_FOUND','typeFoundArticle' => 'badge bg-warning'));
+                            break;
+                        case 'NOT_FOUND':
+                            DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','codigo' => $article_ini, 'marca' => $brand_code, 'nameMarca' => $nameMarca,'status' =>'PARTIAL_FOUND','typeFoundArticle' => 'badge bg-warning'));
+                            break;
+                        default:
+                            DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'PARTIAL_FOUND','codigo' => $article_ini, 'marca' => $brand_code, 'nameMarca' => $nameMarca,'status' =>'PARTIAL_FOUND','typeFoundArticle' => 'badge bg-warning'));
+                            break;
+                    }
+                    $result = false;
                 }
             }else{
+                // print_r("FOUNDED: ".$brand_to_search."\n" );
+                DB::table('extraction_subida')->where('id', $found->id)->update(array('statusArticle' => 'FOUNDED','status' => 'FOUNDED','codigo' => $article_ini, 'marca' => $brand_code, 'nameMarca' => $nameMarca,'typeFoundArticle' => 'badge bg-warning'));
+                $result = true;
+            }
+            /*else{
                 // $result = $this->findArticlesBrandIntoString($found->descripcionComercial,$article_to_search,$found->id,$brand_code,$nameMarca,$article_ini);
                 if ($found->status == 'NOT_FOUND' || $found->status == 'PARTIAL_FOUND') {
                     DB::table('extraction_subida')->where('id', $found->id)->update(array( 'marca' => $brand_code, 'nameMarca' => $nameMarca,'statusArticle' => 'FOUNDED','status' => 'FOUNDED','codigo' => $article_ini,'typeFoundArticle' => 'badge bg-success'));
@@ -703,7 +725,7 @@ class ExtractionDataSearch implements ShouldQueue
                 }
                 
                 $result = true;
-            }
+            }*/
         }
         return $result;
     }
@@ -1134,7 +1156,7 @@ class ExtractionDataSearch implements ShouldQueue
                                     "'.$this->not_result.'") AS FINAL_CORCHETES
                                     ')
                                     ->where('extractionHeaderId', $this->extractionHeader->id)
-                                    ->where('marca','!=',$brand_code)
+                                    //->where('marca','!=',$brand_code)
                                     //->whereIn('status',['FOUNDED','PARTIAL_FOUND'])
                                     ->whereRaw('(status="FOUNDED" OR status="PARTIAL_FOUND")')
                                     ->where('statusArticle','NOT_FOUND')

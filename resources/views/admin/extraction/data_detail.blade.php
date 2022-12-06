@@ -349,7 +349,8 @@
                         }
                     });
                 } );
-            $( table.table().container() ).removeClass( 'form-inline' );
+             $( table.table().container() ).removeClass( 'form-inline' );
+             $( table.table().container() ).
             // $('.dataTables_scrollHeadInner table thead tr').append('<th>ACCION</th>');
 
 
