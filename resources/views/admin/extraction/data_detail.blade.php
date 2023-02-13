@@ -130,7 +130,7 @@
                     html += '<div class="col-12">' + title +'</div>';
                     html += '<div class="col-12"><input type="text" placeholder="Search ' + title + '" /></div>';
                     html += '</div>';
-                
+
                 // if (column == 24) { //ultima fila
                 //     var html = '<div class="row">';
                 //         html += '<div class="col-12">ACCIONES</div>';
@@ -139,7 +139,7 @@
                 // }
                 $(this).html(html);
             } );
-            
+
             var table = $('#tableDetail').DataTable({
                             "pageLength": 100,
                             "lengthMenu": [ 100, 250, 500],
@@ -188,10 +188,12 @@
                                 {label: "statusArticle", name: "statusArticle", type: "text"},
                                 {label: "codigo", name: "codigo", type: "text"},
                                 {label: "status", name: "status", type: "text"},
-                                {label: "marca", name: "marca", type: "text"}
+                                {label: "marca", name: "marca", type: "text"},
+                                //{label: "accion", name: 'accion',type: "text"}
+
                             ],
                             columns: [
-                                { data: 'id', name: 'id',searchable: true, orderable: false },
+                                { data: 'id', name: 'id',searchable: false, orderable: false },
                                 { data: 'dua', name: 'dua',searchable: true, orderable: false },
                                 { data: 'fecha',type: 'datetime', name: 'fecha',searchable: true,orderable: false
                                     // createdCell: function (td, cellData, rowData, row, col) {
@@ -317,8 +319,8 @@
                                 },
                                 { data: 'marca', name: 'marca',searchable: true, orderable: false },
                                 { data: 'nameMarca', name: 'nameMarca',searchable: true, orderable: false }
-                                // { data: 'accion', name: 'accion',searchable: false, orderable: false }
-                            ],         
+                                //{ data: 'accion', name: 'accion', searchable: false, orderable: false }
+                            ],
                             "select": {
                                 style:    'os',
                                 selector: 'td:first-child'
@@ -349,8 +351,8 @@
                         }
                     });
                 } );
-             $( table.table().container() ).removeClass( 'form-inline' );
-             $( table.table().container() ).
+            $( table.table().container() ).removeClass( 'form-inline' );
+            //$( table.table().container() ).
             // $('.dataTables_scrollHeadInner table thead tr').append('<th>ACCION</th>');
 
 
